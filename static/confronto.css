@@ -11,7 +11,7 @@ body{
   justify-content: center;
   align-items: center;
   padding: 10px;
-  background: linear-gradient(135deg, #ff9900, #ffabab);
+  background: linear-gradient(135deg, #048200, #d8ffab);
 }
 .container{
   max-width: 700px;
@@ -34,13 +34,13 @@ body{
   height: 3px;
   width: 30px;
   border-radius: 5px;
-  background: linear-gradient(135deg, #ff9900, #ffabab);
+  background: linear-gradient(135deg, #048200, #d8ffab);
 }
 .content form .user-details{
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin: 20px 0 12px 0;
+  margin: 10px 0 12px 0;
 }
 form .user-details .input-box{
   margin-bottom: 15px;
@@ -64,7 +64,7 @@ form .input-box span.details{
 }
 .user-details .input-box input:focus,
 .user-details .input-box input:valid{
-  border-color: #ffabab;
+  border-color: #d8ffab;
 }
 
  form .category{
@@ -90,7 +90,7 @@ form .input-box span.details{
  #dot-1:checked ~ .category label .one,
  #dot-2:checked ~ .category label .two,
  #dot-3:checked ~ .category label .three{
-   background: #ffabab;
+   background: #d8ffab;
    border-color: #d9d9d9;
  }
  form input[type="radio"]{
@@ -111,11 +111,11 @@ form .input-box span.details{
    letter-spacing: 1px;
    cursor: pointer;
    transition: all 0.3s ease;
-   background: linear-gradient(135deg, #ff9900, #ffabab);
+   background: linear-gradient(135deg, #048200, #d8ffab);
  }
  form .button input:hover{
   /* transform: scale(0.99); */
-  background: linear-gradient(-135deg, #ff9900, #ffabab);
+  background: linear-gradient(-135deg, #048200, #d8ffab);
   }
  @media(max-width: 584px){
  .container{
