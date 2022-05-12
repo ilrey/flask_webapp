@@ -1,6 +1,7 @@
 #LIBRARIES AND FLASK FRAMEWORK
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, send_file
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from fpdf import FPDF, HTMLMixin
 
@@ -141,10 +142,9 @@ def scarica():
     mail_cliente = str(request.form['mail_cliente'])
     cellulare_cliente = str(request.form['numero_cliente'])
     tipologia_contratto = str(request.form['tipologia'])
-    print(tipologia_contratto)
     creare_pdf(nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
                costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
-    return redirect("http://127.0.0.1:5000/")
+    return send_file(r'static/confronto.pdf', as_attachment = True)
 
 
 if __name__ == '__main__':
