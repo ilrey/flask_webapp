@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="UTF-8">
+      <title> Confronto Fatture | Fareconsulenza s.r.l </title>
+      <link rel="stylesheet" href="../static/dati.css">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+   <body>
+      <div class="container">
+         <div class="title">INSERISCI I DATI</div>
+         <div class="content">
+            <form action="/confronto/dati/scarica" method="post">
+               <br>
+               <span class="details">CONSULENTE:</span>
+               <div class="user-details">
+                  <div class="input-box">
+                     <input type="text" name="nome_cognome_consulente" placeholder="nome cognome" required>
+                  </div>
+                  <div class="input-box">
+                     <input type="text" name="mail_consulente" placeholder="e-mail" required>
+                  </div>
+                  <div class="input-box">
+                     <input type="text" name="numero_consulente" placeholder="cellulare" required>
+                  </div>
+                  <select name="nomenclatura">
+                     <option value="signore">Sig.</option>
+                     <option value="azienda">Azienda</option>
+                  </select>
+               </div>
+               <div class="user-details">
+                  <span class="details">CLIENTE:</span>
+                  <div class="input-box"></div>
+                  <div class="input-box"></div>
+                  <div class="input-box"></div>
+                  <div class="input-box"></div>
+                  <div class="input-box">
+                     <input type="text" name="nome_cognome_cliente" placeholder="nome cognome" required>
+                  </div>
+                  <div class="input-box">
+                     <input type="text" name="mail_cliente" placeholder="e-mail" required>
+                  </div>
+                  <div class="input-box">
+                     <input type="text" name="numero_cliente" placeholder="cellulare" required>
+                  </div>
+                  <select name="tipologia">
+                     <option value="bimestrale">Bimestrale</option>
+                     <option value="mensile">Mensile</option>
+                  </select>
+                  <div class="input-box"></div>
+               </div>
+               <div class="button">
+                  <input type="submit" value="SCARICA">
+               </div>
+            </form>
+         </div>
+      </div>
+   </body>
+</html>

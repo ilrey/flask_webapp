@@ -66,10 +66,9 @@
      border: 1px solid #ccc;
      border-bottom-width: 2px;
      transition: all 0.3s ease;
-     border-color: #09b500;
 }
  .user-details .input-box input:focus, .user-details .input-box input:valid{
-     border-color: #d8ffab;
+     border-color: #09b500;
 }
  form .category{
      display: flex;
@@ -143,4 +142,16 @@
      .container .content .category{
          flex-direction: column;
     }
+}
+ select {
+     height: 35px;
+     width: 18%;
+     margin-bottom: 15px;
+     margin-top: 0px;
+     outline: 0;
+     background: #2ecc71;
+     color: #fff;
+     border: none;
+     padding: 4px;
+     border-radius: 5px;
 }

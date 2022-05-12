@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request
+#LIBRARIES AND FLASK FRAMEWORK
+from flask import Flask, render_template, request, redirect
 import numpy as np
 import matplotlib.pyplot as plt
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = "key"
@@ -87,6 +89,25 @@ def confronta():
                            risparmio_percentuale_f2=risparmio_percentuale_f2,
                            risparmio_percentuale_f3=risparmio_percentuale_f3,
                            risparmio_percentuale_totale=risparmio_percentuale_totale)
+
+@app.route('/confronto/dati', methods=["POST", "GET"])
+def dati():
+    return render_template("dati.html")
+
+@app.route('/confronto/dati/scarica', methods=["POST", "GET"])
+def scarica():
+    nome_consulente = str(request.form['nome_cognome_consulente'])
+    mail_consulente = str(request.form['mail_consulente'])
+    cellulare_consulente = str(request.form['numero_consulente'])
+    tipologia_cliente = str(request.form['nomenclatura'])
+    nome_cliente = str(request.form['nome_cognome_cliente'])
+    mail_cliente = str(request.form['mail_cliente'])
+    cellulare_cliente = str(request.form['numero_cliente'])
+    tipologia_contratto = str(request.form['tipologia'])
+
+    return redirect("http://127.0.0.1:5000/")
+
+
 
 if __name__ == '__main__':
     app.run()
