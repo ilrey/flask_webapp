@@ -6,6 +6,9 @@ from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = "key"
+costo_totale_attuale = None
+costo_totale_fareconsulenza = None
+
 
 #FUNCTIONS
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
@@ -49,6 +52,38 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
                     horizontalalignment=horizontalalignment, **kw)
     plt.savefig('static/graficotorta.png')
 
+def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente, costo_totale_attuale, costo_totale_fare, tipologia, nominativo):
+    pdf= FPDF()
+    pdf.add_page()
+    WIDTH=210
+    HEIGHT=297
+    pdf.image("static/top.jpg", 0, 0, WIDTH)
+    pdf.image("static/bottom.jpg", 0, 270, WIDTH)
+    pdf.image("static/graficobarre.png", 5, 70, WIDTH/2-5)
+    pdf.image("static/graficotorta.png", HEIGHT/2-45, 70, WIDTH /2 - 5)
+    pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)  # added line
+    pdf.set_font('Arial', '', 12)
+
+    moltiplicatore = 6
+    if tipologia == 'mensile':
+        moltiplicatore = 12
+    pdf.multi_cell(0, 5, '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n'
+                   + 'Gentile '+nominativo+' '
+                   + str(nomecliente) + '\n' + '\n'
+                   + 'In alto trova il dettaglio dei costi sostenuti per la Sua utenza che, in merito alla fattura analizzata le ha portato un costo della componente di €'
+                   + str(costo_totale_attuale)+'.' + '\n' + '\n'
+                   + 'Come potrà notare dal grafico, in caso avesse avuto il gestore da noi prospettato, a parità di consumi, avrebbe sostenuto un costo di €'
+                   + str(costo_totale_fare)+' con conseguente beneficio di €'
+                   + str(round((costo_totale_attuale-costo_totale_fare), 1))+'.' + '\n' + '\n' + 'Tale costo Le avrebbe consentito di risparmiare €'
+                   + str(round(round(moltiplicatore*(costo_totale_attuale-costo_totale_fare)), 1))
+                   + ' nell’ultimo anno! A questo si aggiunge una decrescita dei costi di iva che sono direttamente proporzionali all’imponibile dei costi generali.'
+                   + '\n' + '\n' + 'Il Consulente a cui sono affidate le Sue utenze, è a Sua disposizione in NEL TEMPO per seguire i costi e tenerli SEMPRE aggiornati alle migliori condizioni di mercato.'
+                   + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
+
+    pdf.output(r'static/confronto.pdf')
+    #if mailcliente !='e-mail' and mailcliente != '':
+    #    inviamail(mailcliente, nomecliente, nominativo)
+
 #FLASK APP
 @app.route('/')
 def index():
@@ -56,6 +91,7 @@ def index():
 
 @app.route('/confronta', methods=["POST", "GET"])
 def confronta():
+    global costo_totale_attuale, costo_totale_fareconsulenza
     consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
     consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
     consumof3 = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
@@ -75,6 +111,7 @@ def confronta():
     risparmio_percentuale_f2 = round(100-(costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2), 1)
     risparmio_percentuale_f3 = round(100-(costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3), 1)
     risparmio_percentuale_totale = round(100-(costo_totale_fareconsulenza * 100 / costo_totale_attuale), 1)
+
     grafico_a_barre(costo_totale_attuale_f1, costo_totale_attuale_f2, costo_totale_attuale_f3, costo_totale_fareconsulenza_f1,
                     costo_totale_fareconsulenza_f2, costo_totale_fareconsulenza_f3)
 
@@ -104,7 +141,9 @@ def scarica():
     mail_cliente = str(request.form['mail_cliente'])
     cellulare_cliente = str(request.form['numero_cliente'])
     tipologia_contratto = str(request.form['tipologia'])
-
+    print(tipologia_contratto)
+    creare_pdf(nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
+               costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
     return redirect("http://127.0.0.1:5000/")
 
 
