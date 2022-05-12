@@ -2,13 +2,12 @@
 from flask import Flask, render_template, request, redirect
 import numpy as np
 import matplotlib.pyplot as plt
-from fpdf import FPDF
+from fpdf import FPDF, HTMLMixin
 
 app = Flask(__name__)
 app.secret_key = "key"
 costo_totale_attuale = None
 costo_totale_fareconsulenza = None
-
 
 #FUNCTIONS
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
@@ -28,7 +27,7 @@ def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     ax.bar_label(rects1, padding=0)
     ax.bar_label(rects2, padding=0)
     fig.tight_layout()
-    plt.savefig('static/graficobarre.png')
+    plt.savefig('static/img/graficobarre.png')
 
 def grafico_a_torta(ctot_attuale, ctot_fare):
     fig, ax = plt.subplots(figsize=(8, 3), subplot_kw=dict(aspect="equal"))
@@ -50,23 +49,24 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
         kw["arrowprops"].update({"connectionstyle": connectionstyle})
         ax.annotate(recipe[i], xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
                     horizontalalignment=horizontalalignment, **kw)
-    plt.savefig('static/graficotorta.png')
+    plt.savefig('static/img/graficotorta.png')
 
 def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente, costo_totale_attuale, costo_totale_fare, tipologia, nominativo):
     pdf= FPDF()
     pdf.add_page()
     WIDTH=210
     HEIGHT=297
-    pdf.image("static/top.jpg", 0, 0, WIDTH)
-    pdf.image("static/bottom.jpg", 0, 270, WIDTH)
-    pdf.image("static/graficobarre.png", 5, 70, WIDTH/2-5)
-    pdf.image("static/graficotorta.png", HEIGHT/2-45, 70, WIDTH /2 - 5)
+    pdf.image("static/img/top.jpg", 0, 0, WIDTH)
+    pdf.image("static/img/bottom.jpg", 0, 270, WIDTH)
+    pdf.image("static/img/graficobarre.png", 5, 70, WIDTH/2-5)
+    pdf.image("static/img/graficotorta.png", HEIGHT/2-45, 70, WIDTH /2 - 5)
     pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)  # added line
     pdf.set_font('Arial', '', 12)
 
     moltiplicatore = 6
     if tipologia == 'mensile':
         moltiplicatore = 12
+
     pdf.multi_cell(0, 5, '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n'
                    + 'Gentile '+nominativo+' '
                    + str(nomecliente) + '\n' + '\n'
@@ -145,7 +145,6 @@ def scarica():
     creare_pdf(nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
                costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
     return redirect("http://127.0.0.1:5000/")
-
 
 
 if __name__ == '__main__':
