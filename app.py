@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, redirect, send_file
 import numpy as np
 import matplotlib.pyplot as plt
-from fpdf import FPDF, HTMLMixin
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = "key"
