@@ -61,6 +61,7 @@ form .input-box span.details{
   border: 1px solid #ccc;
   border-bottom-width: 2px;
   transition: all 0.3s ease;
+  border-color: #09b500;
 }
 .user-details .input-box input:focus,
 .user-details .input-box input:valid{

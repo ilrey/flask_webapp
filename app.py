@@ -26,7 +26,7 @@ def confronta():
     ripsarmio_percentuale_f2 = (costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2)
     ripsarmio_percentuale_f3 = (costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3)
     risparmio_percentuale_totale = ripsarmio_percentuale_f1+ripsarmio_percentuale_f2+ripsarmio_percentuale_f3
-
+    print(consumof1)
     return render_template("confronto.html")
 
 if __name__ == '__main__':
