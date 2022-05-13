@@ -1,5 +1,5 @@
 # LIBRARIES AND FLASK FRAMEWORK
-from flask import Flask, render_template, request, redirect, send_file, session
+from flask import Flask, render_template, request, send_file, session
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
@@ -57,7 +57,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
 
 
 def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente,
-               costo_totale_attuale, costo_totale_fare, tipologia, nominativo):
+               costo_totale_att, costo_totale_fare, tipologia, nominativo):
     pdf = FPDF()
     pdf.add_page()
     WIDTH = 210
@@ -77,11 +77,11 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
                    + 'Gentile '+nominativo+' '
                    + str(nomecliente) + '\n' + '\n'
                    + 'In alto trova il dettaglio dei costi sostenuti per la Sua utenza che, in merito alla fattura analizzata le ha portato un costo della componente di €'
-                   + str(costo_totale_attuale)+'.' + '\n' + '\n'
+                   + str(costo_totale_att)+'.' + '\n' + '\n'
                    + 'Come potrà notare dal grafico, in caso avesse avuto il gestore da noi prospettato, a parità di consumi, avrebbe sostenuto un costo di €'
                    + str(costo_totale_fare)+' con conseguente beneficio di €'
-                   + str(round((costo_totale_attuale-costo_totale_fare), 1))+'.' + '\n' + '\n' + 'Tale costo Le avrebbe consentito di risparmiare €'
-                   + str(round(round(moltiplicatore*(costo_totale_attuale-costo_totale_fare)), 1))
+                   + str(round((costo_totale_att-costo_totale_fare), 1))+'.' + '\n' + '\n' + 'Tale costo Le avrebbe consentito di risparmiare €'
+                   + str(round(round(moltiplicatore*(costo_totale_att-costo_totale_fare)), 1))
                    + ' nell’ultimo anno! A questo si aggiunge una decrescita dei costi di iva che sono direttamente proporzionali all’imponibile dei costi generali.'
                    + '\n' + '\n' + 'Il Consulente a cui sono affidate le Sue utenze, è a Sua disposizione in NEL TEMPO per seguire i costi e tenerli SEMPRE aggiornati alle migliori condizioni di mercato.'
                    + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
@@ -97,7 +97,7 @@ def login():
     return render_template("login.html")
 
 
-@app.route('/index', methods=["POST", "GET"])
+@app.route('/calcolo', methods=["POST", "GET"])
 def index():
     try:
         con = pymysql.connect(
@@ -107,20 +107,22 @@ def index():
             database="fareconsulenzadb")
         cur = con.cursor()
         cur.execute(
-            "select * from utenti where username='"
+            "select indice from utenti where username='"
             + str(request.form['login']) + "' and password = '"
             + str(request.form['password']) + "'")
         row = cur.fetchone()
         if row is None:
             return render_template("login.html")
         else:
-            return render_template("index.html")
+            utente = row[0]
+            session["utente"] = utente
+            return render_template("calcolo.html")
     except Exception:
         return render_template("login.html")
 
 
-@app.route('/confronta', methods=["POST", "GET"])
-def confronta():
+@app.route('/confronto', methods=["POST", "GET"])
+def confronto():
     global costo_totale_attuale, costo_totale_fareconsulenza
     consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
     consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
