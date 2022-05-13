@@ -9,7 +9,7 @@ app.secret_key = "key"
 costo_totale_attuale = None
 costo_totale_fareconsulenza = None
 
-#FUNCTIONS
+# FUNCTIONS
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     labels = ['F1', 'F2', 'F3']
     Attuale = [cattuale1, cattuale2, cattuale3]
@@ -81,10 +81,10 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
                    + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
 
     pdf.output(r'static/confronto.pdf')
-    #if mailcliente !='e-mail' and mailcliente != '':
+    # if mailcliente !='e-mail' and mailcliente != '':
     #    inviamail(mailcliente, nomecliente, nominativo)
 
-#FLASK APP
+# FLASK APP
 @app.route('/')
 def index():
     return render_template("index.html")
