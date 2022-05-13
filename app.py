@@ -1,5 +1,5 @@
 # LIBRARIES AND FLASK FRAMEWORK
-from flask import Flask, render_template, request, redirect, send_file
+from flask import Flask, render_template, request, redirect, send_file, session
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
