@@ -1,4 +1,4 @@
-#LIBRARIES AND FLASK FRAMEWORK
+# LIBRARIES AND FLASK FRAMEWORK
 from flask import Flask, render_template, request, redirect, send_file
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.secret_key = "key"
 costo_totale_attuale = None
 costo_totale_fareconsulenza = None
+
 
 # FUNCTIONS
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
@@ -29,6 +30,7 @@ def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     fig.tight_layout()
     plt.savefig('static/img/graficobarre.png')
 
+
 def grafico_a_torta(ctot_attuale, ctot_fare):
     fig, ax = plt.subplots(figsize=(8, 3), subplot_kw=dict(aspect="equal"))
     recipe = [(str(ctot_attuale)+"€ Costo attuale fornitore"),
@@ -38,7 +40,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
     colors = ['red', 'orange', 'green']
     wedges, texts = ax.pie(data, wedgeprops=dict(width=0.5), startangle=-40, colors=colors)
     bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
-    kw = dict(arrowprops=dict(arrowstyle="-"),bbox=bbox_props, zorder=0, va="center")
+    kw = dict(arrowprops=dict(arrowstyle="-"), bbox=bbox_props, zorder=0, va="center")
 
     for i, p in enumerate(wedges):
         ang = (p.theta2 - p.theta1) / 2. + p.theta1
@@ -51,15 +53,16 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
                     horizontalalignment=horizontalalignment, **kw)
     plt.savefig('static/img/graficotorta.png')
 
+
 def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente, costo_totale_attuale, costo_totale_fare, tipologia, nominativo):
-    pdf= FPDF()
+    pdf = FPDF()
     pdf.add_page()
-    WIDTH=210
-    HEIGHT=297
+    WIDTH = 210
+    HEIGHT = 297
     pdf.image("static/img/top.jpg", 0, 0, WIDTH)
     pdf.image("static/img/bottom.jpg", 0, 270, WIDTH)
     pdf.image("static/img/graficobarre.png", 5, 70, WIDTH/2-5)
-    pdf.image("static/img/graficotorta.png", HEIGHT/2-45, 70, WIDTH /2 - 5)
+    pdf.image("static/img/graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
     pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)  # added line
     pdf.set_font('Arial', '', 12)
 
@@ -84,10 +87,12 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
     # if mailcliente !='e-mail' and mailcliente != '':
     #    inviamail(mailcliente, nomecliente, nominativo)
 
+
 # FLASK APP
 @app.route('/')
 def index():
     return render_template("index.html")
+
 
 @app.route('/confronta', methods=["POST", "GET"])
 def confronta():
@@ -127,9 +132,11 @@ def confronta():
                            risparmio_percentuale_f3=risparmio_percentuale_f3,
                            risparmio_percentuale_totale=risparmio_percentuale_totale)
 
+
 @app.route('/confronto/dati', methods=["POST", "GET"])
 def dati():
     return render_template("dati.html")
+
 
 @app.route('/confronto/dati/scarica', methods=["POST", "GET"])
 def scarica():
@@ -143,11 +150,8 @@ def scarica():
     tipologia_contratto = str(request.form['tipologia'])
     creare_pdf(nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
                costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
-    return send_file(r'static/confronto.pdf', as_attachment = True)
+    return send_file(r'static/confronto.pdf', as_attachment=True)
 
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
-
-
-
