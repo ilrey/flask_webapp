@@ -11,6 +11,7 @@ app.secret_key = "key"
 costo_totale_attuale = None
 costo_totale_fareconsulenza = None
 
+
 # FUNCTIONS
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     labels = ['F1', 'F2', 'F3']
@@ -96,26 +97,26 @@ def login():
     return render_template("login.html")
 
 
-@app.route('/index', methods=["POST","GET"])
+@app.route('/index', methods=["POST", "GET"])
 def index():
     try:
-        con = pymysql.connect(host="localhost",
-                          user=str(str(request.form['login'])),
-                          password=str(str(request.form['password'])),
-                          database="fareconsulenzadb")
+        con = pymysql.connect(
+            host="localhost",
+            user=str(str(request.form['login'])),
+            password=str(str(request.form['password'])),
+            database="fareconsulenzadb")
         cur = con.cursor()
         cur.execute(
             "select * from utenti where username='"
             + str(request.form['login']) + "' and password = '"
             + str(request.form['password']) + "'")
         row = cur.fetchone()
-        if row == None:
+        if row is None:
             return render_template("login.html")
         else:
             return render_template("index.html")
     except Exception:
         return render_template("login.html")
-
 
 
 @app.route('/confronta', methods=["POST", "GET"])
@@ -172,8 +173,11 @@ def scarica():
     mail_cliente = str(request.form['mail_cliente'])
     cellulare_cliente = str(request.form['numero_cliente'])
     tipologia_contratto = str(request.form['tipologia'])
-    creare_pdf(nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
-               costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
+    creare_pdf(
+        nome_cliente, mail_cliente, nome_consulente,
+        cellulare_consulente, mail_consulente,
+        costo_totale_attuale, costo_totale_fareconsulenza,
+        tipologia_contratto, tipologia_cliente)
     return send_file(r'static/confronto.pdf', as_attachment=True)
 
 
