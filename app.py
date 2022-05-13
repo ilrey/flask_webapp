@@ -3,12 +3,13 @@ from flask import Flask, render_template, request, redirect, send_file, session
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
+import os
+import pymysql
 
 app = Flask(__name__)
 app.secret_key = "key"
 costo_totale_attuale = None
 costo_totale_fareconsulenza = None
-
 
 # FUNCTIONS
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
@@ -54,7 +55,8 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
     plt.savefig('static/img/graficotorta.png')
 
 
-def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente, costo_totale_attuale, costo_totale_fare, tipologia, nominativo):
+def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente,
+               costo_totale_attuale, costo_totale_fare, tipologia, nominativo):
     pdf = FPDF()
     pdf.add_page()
     WIDTH = 210
@@ -90,8 +92,30 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
 
 # FLASK APP
 @app.route('/')
+def login():
+    return render_template("login.html")
+
+
+@app.route('/index', methods=["POST","GET"])
 def index():
-    return render_template("index.html")
+    try:
+        con = pymysql.connect(host="localhost",
+                          user=str(str(request.form['login'])),
+                          password=str(str(request.form['password'])),
+                          database="fareconsulenzadb")
+        cur = con.cursor()
+        cur.execute(
+            "select * from utenti where username='"
+            + str(request.form['login']) + "' and password = '"
+            + str(request.form['password']) + "'")
+        row = cur.fetchone()
+        if row == None:
+            return render_template("login.html")
+        else:
+            return render_template("index.html")
+    except Exception:
+        return render_template("login.html")
+
 
 
 @app.route('/confronta', methods=["POST", "GET"])
