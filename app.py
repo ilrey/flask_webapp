@@ -1,5 +1,5 @@
 # LIBRARIES AND FLASK FRAMEWORK
-from flask import Flask, render_template, request, send_file, session
+from flask import Flask, render_template, request, send_file, session, g
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
@@ -97,6 +97,14 @@ def login():
     return render_template("login.html")
 
 
+@app.before_request
+def before_request():
+    if "utente" in session:
+        g.utente = session["utente"]
+    else:
+        g.utente = None
+
+
 @app.route('/calcolo', methods=["POST", "GET"])
 def index():
     try:
@@ -123,65 +131,74 @@ def index():
 
 @app.route('/confronto', methods=["POST", "GET"])
 def confronto():
-    global costo_totale_attuale, costo_totale_fareconsulenza
-    consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
-    consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
-    consumof3 = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
-    costo_totale_attuale_f1 = round(float(request.form['costo_attuale_f1'])*consumof1, 1)
-    costo_totale_attuale_f2 = round(float(request.form['costo_attuale_f2'])*consumof2, 1)
-    costo_totale_attuale_f3 = round(float(request.form['costo_attuale_f3'])*consumof3, 1)
-    costo_totale_fareconsulenza_f1 = round(float(request.form['costo_fareconsulenza_f1'])*consumof1, 1)
-    costo_totale_fareconsulenza_f2 = round(float(request.form['costo_fareconsulenza_f2'])*consumof2, 1)
-    costo_totale_fareconsulenza_f3 = round(float(request.form['costo_fareconsulenza_f3'])*consumof3, 1)
-    costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
-    costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
-    risparmio_euro_f1 = round(costo_totale_attuale_f1-costo_totale_fareconsulenza_f1, 1)
-    risparmio_euro_f2 = round(costo_totale_attuale_f2-costo_totale_fareconsulenza_f2, 1)
-    risparmio_euro_f3 = round(costo_totale_attuale_f3-costo_totale_fareconsulenza_f3, 1)
-    risparmio_euro_totale = round(risparmio_euro_f3+risparmio_euro_f2+risparmio_euro_f1, 1)
-    risparmio_percentuale_f1 = round(100-(costo_totale_fareconsulenza_f1 * 100 / costo_totale_attuale_f1), 1)
-    risparmio_percentuale_f2 = round(100-(costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2), 1)
-    risparmio_percentuale_f3 = round(100-(costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3), 1)
-    risparmio_percentuale_totale = round(100-(costo_totale_fareconsulenza * 100 / costo_totale_attuale), 1)
+    if g.utente:
+        global costo_totale_attuale, costo_totale_fareconsulenza
+        consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
+        consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
+        consumof3 = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
+        costo_totale_attuale_f1 = round(float(request.form['costo_attuale_f1'])*consumof1, 1)
+        costo_totale_attuale_f2 = round(float(request.form['costo_attuale_f2'])*consumof2, 1)
+        costo_totale_attuale_f3 = round(float(request.form['costo_attuale_f3'])*consumof3, 1)
+        costo_totale_fareconsulenza_f1 = round(float(request.form['costo_fareconsulenza_f1'])*consumof1, 1)
+        costo_totale_fareconsulenza_f2 = round(float(request.form['costo_fareconsulenza_f2'])*consumof2, 1)
+        costo_totale_fareconsulenza_f3 = round(float(request.form['costo_fareconsulenza_f3'])*consumof3, 1)
+        costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
+        costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
+        risparmio_euro_f1 = round(costo_totale_attuale_f1-costo_totale_fareconsulenza_f1, 1)
+        risparmio_euro_f2 = round(costo_totale_attuale_f2-costo_totale_fareconsulenza_f2, 1)
+        risparmio_euro_f3 = round(costo_totale_attuale_f3-costo_totale_fareconsulenza_f3, 1)
+        risparmio_euro_totale = round(risparmio_euro_f3+risparmio_euro_f2+risparmio_euro_f1, 1)
+        risparmio_percentuale_f1 = round(100-(costo_totale_fareconsulenza_f1 * 100 / costo_totale_attuale_f1), 1)
+        risparmio_percentuale_f2 = round(100-(costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2), 1)
+        risparmio_percentuale_f3 = round(100-(costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3), 1)
+        risparmio_percentuale_totale = round(100-(costo_totale_fareconsulenza * 100 / costo_totale_attuale), 1)
 
-    grafico_a_barre(costo_totale_attuale_f1, costo_totale_attuale_f2, costo_totale_attuale_f3, costo_totale_fareconsulenza_f1,
-                    costo_totale_fareconsulenza_f2, costo_totale_fareconsulenza_f3)
+        grafico_a_barre(costo_totale_attuale_f1, costo_totale_attuale_f2, costo_totale_attuale_f3, costo_totale_fareconsulenza_f1,
+                        costo_totale_fareconsulenza_f2, costo_totale_fareconsulenza_f3)
 
-    grafico_a_torta(costo_totale_attuale, costo_totale_fareconsulenza)
+        grafico_a_torta(costo_totale_attuale, costo_totale_fareconsulenza)
 
-    return render_template("confronto.html",
-                           risparmio_euro_f1=risparmio_euro_f1,
-                           risparmio_euro_f2=risparmio_euro_f2,
-                           risparmio_euro_f3=risparmio_euro_f3,
-                           risparmio_euro_totale=risparmio_euro_totale,
-                           risparmio_percentuale_f1=risparmio_percentuale_f1,
-                           risparmio_percentuale_f2=risparmio_percentuale_f2,
-                           risparmio_percentuale_f3=risparmio_percentuale_f3,
-                           risparmio_percentuale_totale=risparmio_percentuale_totale)
+        return render_template("confronto.html",
+                               risparmio_euro_f1=risparmio_euro_f1,
+                               risparmio_euro_f2=risparmio_euro_f2,
+                               risparmio_euro_f3=risparmio_euro_f3,
+                               risparmio_euro_totale=risparmio_euro_totale,
+                               risparmio_percentuale_f1=risparmio_percentuale_f1,
+                               risparmio_percentuale_f2=risparmio_percentuale_f2,
+                               risparmio_percentuale_f3=risparmio_percentuale_f3,
+                               risparmio_percentuale_totale=risparmio_percentuale_totale)
+    else:
+        return render_template("login.html")
 
 
-@app.route('/confronto/dati', methods=["POST", "GET"])
+@app.route('/dati', methods=["POST", "GET"])
 def dati():
-    return render_template("dati.html")
+    if g.utente:
+        return render_template("dati.html")
+    else:
+        return render_template("login.html")
 
 
-@app.route('/confronto/dati/scarica', methods=["POST", "GET"])
+@app.route('/scarica', methods=["POST", "GET"])
 def scarica():
-    nome_consulente = str(request.form['nome_cognome_consulente'])
-    mail_consulente = str(request.form['mail_consulente'])
-    cellulare_consulente = str(request.form['numero_consulente'])
-    tipologia_cliente = str(request.form['nomenclatura'])
-    nome_cliente = str(request.form['nome_cognome_cliente'])
-    mail_cliente = str(request.form['mail_cliente'])
-    cellulare_cliente = str(request.form['numero_cliente'])
-    tipologia_contratto = str(request.form['tipologia'])
-    creare_pdf(
-        nome_cliente, mail_cliente, nome_consulente,
-        cellulare_consulente, mail_consulente,
-        costo_totale_attuale, costo_totale_fareconsulenza,
-        tipologia_contratto, tipologia_cliente)
-    return send_file(r'static/confronto.pdf', as_attachment=True)
+    if g.utente:
+        nome_consulente = str(request.form['nome_cognome_consulente'])
+        mail_consulente = str(request.form['mail_consulente'])
+        cellulare_consulente = str(request.form['numero_consulente'])
+        tipologia_cliente = str(request.form['nomenclatura'])
+        nome_cliente = str(request.form['nome_cognome_cliente'])
+        mail_cliente = str(request.form['mail_cliente'])
+        cellulare_cliente = str(request.form['numero_cliente'])
+        tipologia_contratto = str(request.form['tipologia'])
+        creare_pdf(
+            nome_cliente, mail_cliente, nome_consulente,
+            cellulare_consulente, mail_consulente,
+            costo_totale_attuale, costo_totale_fareconsulenza,
+            tipologia_contratto, tipologia_cliente)
+        return send_file(r'static/confronto.pdf', as_attachment=True)
+    else:
+        return render_template("login.html")
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0', threaded=True)
