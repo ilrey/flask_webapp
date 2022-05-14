@@ -9,6 +9,8 @@ from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = "key"
+costo_totale_attuale = None
+costo_totale_fareconsulenza = None
 
 
 # FUNCTIONS
@@ -29,7 +31,7 @@ def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     ax.bar_label(rects1, padding=0)
     ax.bar_label(rects2, padding=0)
     fig.tight_layout()
-    plt.savefig('static/img/graficobarre.png')
+    plt.savefig('static/img/'+g.utente+'_graficobarre.png')
 
 
 def grafico_a_torta(ctot_attuale, ctot_fare):
@@ -52,7 +54,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
         kw["arrowprops"].update({"connectionstyle": connectionstyle})
         ax.annotate(recipe[i], xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
                     horizontalalignment=horizontalalignment, **kw)
-    plt.savefig('static/img/graficotorta.png')
+    plt.savefig('static/img/'+g.utente+'_graficotorta.png')
 
 
 def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente,
@@ -63,8 +65,8 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
     HEIGHT = 297
     pdf.image("static/img/top.jpg", 0, 0, WIDTH)
     pdf.image("static/img/bottom.jpg", 0, 270, WIDTH)
-    pdf.image("static/img/graficobarre.png", 5, 70, WIDTH/2-5)
-    pdf.image("static/img/graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
+    pdf.image("static/img/"+g.utente+"_graficobarre.png", 5, 70, WIDTH/2-5)
+    pdf.image("static/img/"+g.utente+"_graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
     pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)  # added line
     pdf.set_font('Arial', '', 12)
 
@@ -85,7 +87,7 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
                    + '\n' + '\n' + 'Il Consulente a cui sono affidate le Sue utenze, è a Sua disposizione in NEL TEMPO per seguire i costi e tenerli SEMPRE aggiornati alle migliori condizioni di mercato.'
                    + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
 
-    pdf.output(r'static/confronto.pdf')
+    pdf.output(r'static/'+g.utente+'confronto.pdf')
     # if mailcliente !='e-mail' and mailcliente != '':
     #    inviamail(mailcliente, nomecliente, nominativo)
 
@@ -130,6 +132,7 @@ def index():
 @app.route('/confronto', methods=["POST", "GET"])
 def confronto():
     if g.utente:
+        global costo_totale_attuale, costo_totale_fareconsulenza
         consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
         consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
         consumof3 = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
@@ -139,8 +142,8 @@ def confronto():
         costo_totale_fareconsulenza_f1 = round(float(request.form['costo_fareconsulenza_f1'])*consumof1, 1)
         costo_totale_fareconsulenza_f2 = round(float(request.form['costo_fareconsulenza_f2'])*consumof2, 1)
         costo_totale_fareconsulenza_f3 = round(float(request.form['costo_fareconsulenza_f3'])*consumof3, 1)
-        g.costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
-        g.costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
+        costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
+        costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
         risparmio_euro_f1 = round(costo_totale_attuale_f1-costo_totale_fareconsulenza_f1, 1)
         risparmio_euro_f2 = round(costo_totale_attuale_f2-costo_totale_fareconsulenza_f2, 1)
         risparmio_euro_f3 = round(costo_totale_attuale_f3-costo_totale_fareconsulenza_f3, 1)
@@ -148,12 +151,12 @@ def confronto():
         risparmio_percentuale_f1 = round(100-(costo_totale_fareconsulenza_f1 * 100 / costo_totale_attuale_f1), 1)
         risparmio_percentuale_f2 = round(100-(costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2), 1)
         risparmio_percentuale_f3 = round(100-(costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3), 1)
-        risparmio_percentuale_totale = round(100-(g.costo_totale_fareconsulenza * 100 / g.costo_totale_attuale), 1)
+        risparmio_percentuale_totale = round(100-(costo_totale_fareconsulenza * 100 / costo_totale_attuale), 1)
 
         grafico_a_barre(costo_totale_attuale_f1, costo_totale_attuale_f2, costo_totale_attuale_f3, costo_totale_fareconsulenza_f1,
                         costo_totale_fareconsulenza_f2, costo_totale_fareconsulenza_f3)
 
-        grafico_a_torta(g.costo_totale_attuale, g.costo_totale_fareconsulenza)
+        grafico_a_torta(costo_totale_attuale, costo_totale_fareconsulenza)
 
         return render_template("confronto.html",
                                risparmio_euro_f1=risparmio_euro_f1,
@@ -187,15 +190,14 @@ def scarica():
         mail_cliente = str(request.form['mail_cliente'])
         cellulare_cliente = str(request.form['numero_cliente'])
         tipologia_contratto = str(request.form['tipologia'])
+        print(costo_totale_attuale, costo_totale_fareconsulenza)
         creare_pdf(
-            nome_cliente, mail_cliente, nome_consulente,
-            cellulare_consulente, mail_consulente,
-            g.costo_totale_attuale, g.costo_totale_fareconsulenza,
-            tipologia_contratto, tipologia_cliente)
-        return send_file(r'static/confronto.pdf', as_attachment=True)
+            nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
+            costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
+        return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
     else:
         return redirect("/")
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', threaded=True)
+    app.run(debug=False, host='0.0.0.0')
