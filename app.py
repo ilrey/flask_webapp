@@ -1,15 +1,14 @@
 # LIBRARIES AND FLASK FRAMEWORK
-from flask import Flask, render_template, request, send_file, session, g
+from flask import Flask, render_template, request, send_file, redirect, session, g
+import os
+import pymysql
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
-import os
-import pymysql
+
 
 app = Flask(__name__)
 app.secret_key = "key"
-costo_totale_attuale = None
-costo_totale_fareconsulenza = None
 
 
 # FUNCTIONS
@@ -120,19 +119,17 @@ def index():
             + str(request.form['password']) + "'")
         row = cur.fetchone()
         if row is None:
-            return render_template("login.html")
+            return redirect("/")
         else:
-            utente = row[0]
-            session["utente"] = utente
+            session["utente"] = row[0]
             return render_template("calcolo.html")
     except Exception:
-        return render_template("login.html")
+        return redirect("/")
 
 
 @app.route('/confronto', methods=["POST", "GET"])
 def confronto():
     if g.utente:
-        global costo_totale_attuale, costo_totale_fareconsulenza
         consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
         consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
         consumof3 = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
@@ -142,8 +139,8 @@ def confronto():
         costo_totale_fareconsulenza_f1 = round(float(request.form['costo_fareconsulenza_f1'])*consumof1, 1)
         costo_totale_fareconsulenza_f2 = round(float(request.form['costo_fareconsulenza_f2'])*consumof2, 1)
         costo_totale_fareconsulenza_f3 = round(float(request.form['costo_fareconsulenza_f3'])*consumof3, 1)
-        costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
-        costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
+        g.costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
+        g.costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
         risparmio_euro_f1 = round(costo_totale_attuale_f1-costo_totale_fareconsulenza_f1, 1)
         risparmio_euro_f2 = round(costo_totale_attuale_f2-costo_totale_fareconsulenza_f2, 1)
         risparmio_euro_f3 = round(costo_totale_attuale_f3-costo_totale_fareconsulenza_f3, 1)
@@ -151,12 +148,12 @@ def confronto():
         risparmio_percentuale_f1 = round(100-(costo_totale_fareconsulenza_f1 * 100 / costo_totale_attuale_f1), 1)
         risparmio_percentuale_f2 = round(100-(costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2), 1)
         risparmio_percentuale_f3 = round(100-(costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3), 1)
-        risparmio_percentuale_totale = round(100-(costo_totale_fareconsulenza * 100 / costo_totale_attuale), 1)
+        risparmio_percentuale_totale = round(100-(g.costo_totale_fareconsulenza * 100 / g.costo_totale_attuale), 1)
 
         grafico_a_barre(costo_totale_attuale_f1, costo_totale_attuale_f2, costo_totale_attuale_f3, costo_totale_fareconsulenza_f1,
                         costo_totale_fareconsulenza_f2, costo_totale_fareconsulenza_f3)
 
-        grafico_a_torta(costo_totale_attuale, costo_totale_fareconsulenza)
+        grafico_a_torta(g.costo_totale_attuale, g.costo_totale_fareconsulenza)
 
         return render_template("confronto.html",
                                risparmio_euro_f1=risparmio_euro_f1,
@@ -168,7 +165,7 @@ def confronto():
                                risparmio_percentuale_f3=risparmio_percentuale_f3,
                                risparmio_percentuale_totale=risparmio_percentuale_totale)
     else:
-        return render_template("login.html")
+        return redirect("/")
 
 
 @app.route('/dati', methods=["POST", "GET"])
@@ -176,7 +173,7 @@ def dati():
     if g.utente:
         return render_template("dati.html")
     else:
-        return render_template("login.html")
+        return redirect("/")
 
 
 @app.route('/scarica', methods=["POST", "GET"])
@@ -193,11 +190,11 @@ def scarica():
         creare_pdf(
             nome_cliente, mail_cliente, nome_consulente,
             cellulare_consulente, mail_consulente,
-            costo_totale_attuale, costo_totale_fareconsulenza,
+            g.costo_totale_attuale, g.costo_totale_fareconsulenza,
             tipologia_contratto, tipologia_cliente)
         return send_file(r'static/confronto.pdf', as_attachment=True)
     else:
-        return render_template("login.html")
+        return redirect("/")
 
 
 if __name__ == '__main__':
