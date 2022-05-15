@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.secret_key = "key"
 costo_totale_attuale = None
 costo_totale_fareconsulenza = None
+gaetano = "coglione"
 
 
 # FUNCTIONS
@@ -201,3 +202,6 @@ def scarica():
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
+
+
+# CLASS
