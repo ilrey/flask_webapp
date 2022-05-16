@@ -134,40 +134,40 @@ def index():
 def confronto():
     if g.utente:
         global costo_totale_attuale, costo_totale_fareconsulenza
-        consumof1 = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
-        consumof2 = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
-        consumof3 = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
-        costo_totale_attuale_f1 = round(float(request.form['costo_attuale_f1'])*consumof1, 1)
-        costo_totale_attuale_f2 = round(float(request.form['costo_attuale_f2'])*consumof2, 1)
-        costo_totale_attuale_f3 = round(float(request.form['costo_attuale_f3'])*consumof3, 1)
-        costo_totale_fareconsulenza_f1 = round(float(request.form['costo_fareconsulenza_f1'])*consumof1, 1)
-        costo_totale_fareconsulenza_f2 = round(float(request.form['costo_fareconsulenza_f2'])*consumof2, 1)
-        costo_totale_fareconsulenza_f3 = round(float(request.form['costo_fareconsulenza_f3'])*consumof3, 1)
-        costo_totale_attuale = round(costo_totale_attuale_f1+costo_totale_attuale_f2+costo_totale_attuale_f3, 1)
-        costo_totale_fareconsulenza = round(costo_totale_fareconsulenza_f1+costo_totale_fareconsulenza_f2+costo_totale_fareconsulenza_f3, 1)
-        risparmio_euro_f1 = round(costo_totale_attuale_f1-costo_totale_fareconsulenza_f1, 1)
-        risparmio_euro_f2 = round(costo_totale_attuale_f2-costo_totale_fareconsulenza_f2, 1)
-        risparmio_euro_f3 = round(costo_totale_attuale_f3-costo_totale_fareconsulenza_f3, 1)
-        risparmio_euro_totale = round(risparmio_euro_f3+risparmio_euro_f2+risparmio_euro_f1, 1)
-        risparmio_percentuale_f1 = round(100-(costo_totale_fareconsulenza_f1 * 100 / costo_totale_attuale_f1), 1)
-        risparmio_percentuale_f2 = round(100-(costo_totale_fareconsulenza_f2 * 100 / costo_totale_attuale_f2), 1)
-        risparmio_percentuale_f3 = round(100-(costo_totale_fareconsulenza_f3 * 100 / costo_totale_attuale_f3), 1)
-        risparmio_percentuale_totale = round(100-(costo_totale_fareconsulenza * 100 / costo_totale_attuale), 1)
+        session["consumof1"] = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
+        session["consumof2"] = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
+        session["consumof3"] = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
+        session["costo_totale_attuale_f1"] = round(float(request.form['costo_attuale_f1'])*session.get('consumof1', None), 1)
+        session["costo_totale_attuale_f2"] = round(float(request.form['costo_attuale_f2'])*session.get('consumof2', None), 1)
+        session["costo_totale_attuale_f3"] = round(float(request.form['costo_attuale_f3'])*session.get('consumof3', None), 1)
+        session["costo_totale_fareconsulenza_f1"] = round(float(request.form['costo_fareconsulenza_f1'])*session.get('consumof1', None), 1)
+        session["costo_totale_fareconsulenza_f2"] = round(float(request.form['costo_fareconsulenza_f2'])*session.get('consumof2', None), 1)
+        session["costo_totale_fareconsulenza_f3"] = round(float(request.form['costo_fareconsulenza_f3'])*session.get('consumof3', None), 1)
+        session["costo_totale_attuale"] = round(session.get('costo_totale_attuale_f1', None)+session.get('costo_totale_attuale_f2', None)+session.get('costo_totale_attuale_f3', None), 1)
+        session["costo_totale_fareconsulenza"] = round(session.get('costo_totale_fareconsulenza_f1', None)+session.get('costo_totale_fareconsulenza_f2', None)+session.get('costo_totale_fareconsulenza_f3', None), 1)
+        session["risparmio_euro_f1"] = round(session.get('costo_totale_attuale_f1', None)-session.get('costo_totale_fareconsulenza_f1', None), 1)
+        session["risparmio_euro_f2"] = round(session.get('costo_totale_attuale_f2', None)-session.get('costo_totale_fareconsulenza_f2', None), 1)
+        session["risparmio_euro_f3"] = round(session.get('costo_totale_attuale_f3', None)-session.get('costo_totale_fareconsulenza_f3', None), 1)
+        session["risparmio_euro_totale"] = round(session.get('risparmio_euro_f1', None)+session.get('risparmio_euro_f2', None)+session.get('risparmio_euro_f3', None), 1)
+        session["risparmio_percentuale_f1"] = round(100-(session.get('costo_totale_fareconsulenza_f1', None) * 100 / session.get('costo_totale_attuale_f1', None)), 1)
+        session["risparmio_percentuale_f2"] = round(100-(session.get('costo_totale_fareconsulenza_f2', None) * 100 / session.get('costo_totale_attuale_f2', None)), 1)
+        session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
+        session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
 
-        grafico_a_barre(costo_totale_attuale_f1, costo_totale_attuale_f2, costo_totale_attuale_f3, costo_totale_fareconsulenza_f1,
-                        costo_totale_fareconsulenza_f2, costo_totale_fareconsulenza_f3)
+        grafico_a_barre(session.get('costo_totale_attuale_f1', None), session.get('costo_totale_attuale_f2', None), session.get('costo_totale_attuale_f3', None), session.get('costo_totale_fareconsulenza_f1', None),
+                        session.get('costo_totale_fareconsulenza_f2', None), session.get('costo_totale_fareconsulenza_f3', None))
 
-        grafico_a_torta(costo_totale_attuale, costo_totale_fareconsulenza)
+        grafico_a_torta(session["costo_totale_attuale"], session.get('costo_totale_fareconsulenza', None))
 
         return render_template("confronto.html",
-                               risparmio_euro_f1=risparmio_euro_f1,
-                               risparmio_euro_f2=risparmio_euro_f2,
-                               risparmio_euro_f3=risparmio_euro_f3,
-                               risparmio_euro_totale=risparmio_euro_totale,
-                               risparmio_percentuale_f1=risparmio_percentuale_f1,
-                               risparmio_percentuale_f2=risparmio_percentuale_f2,
-                               risparmio_percentuale_f3=risparmio_percentuale_f3,
-                               risparmio_percentuale_totale=risparmio_percentuale_totale)
+                               risparmio_euro_f1=session.get('risparmio_euro_f1', None),
+                               risparmio_euro_f2=session.get('risparmio_euro_f2', None),
+                               risparmio_euro_f3=session.get('risparmio_euro_f3', None),
+                               risparmio_euro_totale=session.get('risparmio_euro_totale', None),
+                               risparmio_percentuale_f1=session.get('risparmio_percentuale_f1', None),
+                               risparmio_percentuale_f2=session.get('risparmio_percentuale_f2', None),
+                               risparmio_percentuale_f3=session.get('risparmio_percentuale_f3', None),
+                               risparmio_percentuale_totale=session.get('risparmio_percentuale_totale', None))
     else:
         return redirect("/")
 
@@ -191,10 +191,9 @@ def scarica():
         mail_cliente = str(request.form['mail_cliente'])
         cellulare_cliente = str(request.form['numero_cliente'])
         tipologia_contratto = str(request.form['tipologia'])
-        print(costo_totale_attuale, costo_totale_fareconsulenza)
         creare_pdf(
             nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
-            costo_totale_attuale, costo_totale_fareconsulenza, tipologia_contratto, tipologia_cliente)
+            session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), tipologia_contratto, tipologia_cliente)
         return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
     else:
         return redirect("/")
@@ -204,4 +203,4 @@ if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
 
 
-# CLASS
+# INSERIRE LE VARIABILI IN DATABASE
