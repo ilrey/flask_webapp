@@ -19,8 +19,8 @@ def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     labels = ['F1', 'F2', 'F3']
     Attuale = [cattuale1, cattuale2, cattuale3]
     Fareconsulenza = [cfare1, cfare2, cfare3]
-    x = np.arange(len(labels))  # the label locations
-    width = 0.25  # the width of the bars
+    x = np.arange(len(labels))  # Label locations
+    width = 0.25  # Width of the bars
     fig, ax = plt.subplots()
     rects1 = ax.bar(x - width / 2, Attuale, width, label='Attuale Fornitore', color="red")
     rects2 = ax.bar(x + width / 2, Fareconsulenza, width, label='Fare Consulenza', color="orange")
@@ -201,6 +201,3 @@ def scarica():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
-
-# INSERIRE LE VARIABILI IN DATABASE
