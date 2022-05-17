@@ -68,16 +68,16 @@ def confronto():
         session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
         session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
 
-        proccesso1 = multiprocessing.Process(target=modules.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None)
-                                                                                  , session.get('costo_totale_attuale_f2', None)
-                                                                                  , session.get('costo_totale_attuale_f3', None)
-                                                                                  , session.get('costo_totale_fareconsulenza_f1', None)
-                                                                                  , session.get('costo_totale_fareconsulenza_f2', None)
-                                                                                  , session.get('costo_totale_fareconsulenza_f3', None)
-                                                                                  , g.utente))
-        proccesso2 = multiprocessing.Process(target=modules.grafico_a_torta, args=(session.get('costo_totale_attuale', None)
-                                                                                  , session.get('costo_totale_fareconsulenza', None)
-                                                                                  , g.utente))
+        proccesso1 = multiprocessing.Process(target=modules.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
+                                                                                   session.get('costo_totale_attuale_f2', None),
+                                                                                   session.get('costo_totale_attuale_f3', None),
+                                                                                   session.get('costo_totale_fareconsulenza_f1', None),
+                                                                                   session.get('costo_totale_fareconsulenza_f2', None),
+                                                                                   session.get('costo_totale_fareconsulenza_f3', None),
+                                                                                   g.utente))
+        proccesso2 = multiprocessing.Process(target=modules.grafico_a_torta, args=(session.get('costo_totale_attuale', None),
+                                                                                   session.get('costo_totale_fareconsulenza', None),
+                                                                                   g.utente))
         proccesso1.start()
         proccesso1.terminate()
         proccesso2.start()
