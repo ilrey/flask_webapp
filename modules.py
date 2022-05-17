@@ -1,3 +1,4 @@
+# LIBRARIES
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
@@ -5,7 +6,7 @@ import os
 
 plt.switch_backend('agg')
 
-
+# PIE CHART FUNCTION
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3, username):
     labels = ['F1', 'F2', 'F3']
     Attuale = [cattuale1, cattuale2, cattuale3]
@@ -26,6 +27,7 @@ def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3, use
     plt.savefig('static/img/'+username+'_graficobarre.png')
 
 
+# BAR CHART FUNCTION
 def grafico_a_torta(ctot_attuale, ctot_fare, username):
     fig, ax = plt.subplots(figsize=(8, 3), subplot_kw=dict(aspect="equal"))
     recipe = [(str(ctot_attuale)+"€ Costo attuale fornitore"),
@@ -50,6 +52,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare, username):
     plt.savefig('static/img/'+username+'_graficotorta.png')
 
 
+# PDF CREATION FUNCTION
 def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente,
                costo_totale_att, costo_totale_fare, tipologia, nominativo, username):
     pdf = FPDF()
