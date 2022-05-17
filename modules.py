@@ -6,6 +6,7 @@ import os
 
 plt.switch_backend('agg')
 
+
 # PIE CHART FUNCTION
 def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3, username):
     labels = ['F1', 'F2', 'F3']
