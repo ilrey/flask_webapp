@@ -10,8 +10,6 @@ from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = "key"
-costo_totale_attuale = None
-costo_totale_fareconsulenza = None
 plt.switch_backend('agg')
 
 
