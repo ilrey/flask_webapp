@@ -135,7 +135,6 @@ def index():
 @app.route('/confronto', methods=["POST", "GET"])
 def confronto():
     if g.utente:
-        global costo_totale_attuale, costo_totale_fareconsulenza
         session["consumof1"] = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
         session["consumof2"] = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
         session["consumof3"] = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
