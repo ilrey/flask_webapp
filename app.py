@@ -157,7 +157,7 @@ def confronto():
         grafico_a_barre(session.get('costo_totale_attuale_f1', None), session.get('costo_totale_attuale_f2', None), session.get('costo_totale_attuale_f3', None), session.get('costo_totale_fareconsulenza_f1', None),
                         session.get('costo_totale_fareconsulenza_f2', None), session.get('costo_totale_fareconsulenza_f3', None))
 
-        grafico_a_torta(session["costo_totale_attuale"], session.get('costo_totale_fareconsulenza', None))
+        grafico_a_torta(session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None))
 
         return render_template("confronto.html",
                                risparmio_euro_f1=session.get('risparmio_euro_f1', None),
@@ -200,4 +200,4 @@ def scarica():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', threaded=True)
