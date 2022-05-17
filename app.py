@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, send_file, redirect, session, g
 import os
 import pymysql
+import multiprocessing
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
@@ -15,7 +16,7 @@ plt.switch_backend('agg')
 
 
 # FUNCTIONS
-def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
+def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3, username):
     labels = ['F1', 'F2', 'F3']
     Attuale = [cattuale1, cattuale2, cattuale3]
     Fareconsulenza = [cfare1, cfare2, cfare3]
@@ -32,10 +33,10 @@ def grafico_a_barre(cattuale1, cattuale2, cattuale3, cfare1, cfare2, cfare3):
     ax.bar_label(rects1, padding=0)
     ax.bar_label(rects2, padding=0)
     fig.tight_layout()
-    plt.savefig('static/img/'+g.utente+'_graficobarre.png')
+    plt.savefig('static/img/'+username+'_graficobarre.png')
 
 
-def grafico_a_torta(ctot_attuale, ctot_fare):
+def grafico_a_torta(ctot_attuale, ctot_fare, username):
     fig, ax = plt.subplots(figsize=(8, 3), subplot_kw=dict(aspect="equal"))
     recipe = [(str(ctot_attuale)+"€ Costo attuale fornitore"),
               (str(ctot_fare)+"€ Costo Fareconsulenza"),
@@ -55,7 +56,8 @@ def grafico_a_torta(ctot_attuale, ctot_fare):
         kw["arrowprops"].update({"connectionstyle": connectionstyle})
         ax.annotate(recipe[i], xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
                     horizontalalignment=horizontalalignment, **kw)
-    plt.savefig('static/img/'+g.utente+'_graficotorta.png')
+
+    plt.savefig('static/img/'+username+'_graficotorta.png')
 
 
 def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente,
@@ -70,8 +72,8 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
     pdf.image("static/img/"+g.utente+"_graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
     pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)  # added line
     pdf.set_font('Arial', '', 12)
-
     moltiplicatore = 6
+
     if tipologia == 'mensile':
         moltiplicatore = 12
 
@@ -89,6 +91,8 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
                    + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
 
     pdf.output(r'static/'+g.utente+'confronto.pdf')
+    os.remove("static/img/"+g.utente+"_graficobarre.png")
+    os.remove("static/img/" + g.utente + "_graficotorta.png")
     # if mailcliente !='e-mail' and mailcliente != '':
     #    inviamail(mailcliente, nomecliente, nominativo)
 
@@ -154,10 +158,18 @@ def confronto():
         session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
         session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
 
-        grafico_a_barre(session.get('costo_totale_attuale_f1', None), session.get('costo_totale_attuale_f2', None), session.get('costo_totale_attuale_f3', None), session.get('costo_totale_fareconsulenza_f1', None),
-                        session.get('costo_totale_fareconsulenza_f2', None), session.get('costo_totale_fareconsulenza_f3', None))
-
-        grafico_a_torta(session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None))
+        proccesso1 = multiprocessing.Process(target=grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
+                                                                           session.get('costo_totale_attuale_f2', None),
+                                                                           session.get('costo_totale_attuale_f3', None),
+                                                                           session.get('costo_totale_fareconsulenza_f1', None),
+                                                                           session.get('costo_totale_fareconsulenza_f2', None),
+                                                                           session.get('costo_totale_fareconsulenza_f3', None), g.utente))
+        proccesso2 = multiprocessing.Process(target=grafico_a_torta, args=(session.get('costo_totale_attuale', None),
+                                                                           session.get('costo_totale_fareconsulenza', None), g.utente))
+        proccesso1.start()
+        proccesso1.terminate()
+        proccesso2.start()
+        proccesso2.terminate()
 
         return render_template("confronto.html",
                                risparmio_euro_f1=session.get('risparmio_euro_f1', None),
