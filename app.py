@@ -1,7 +1,7 @@
 # LIBRARIES AND FLASK FRAMEWORK
 from flask import Flask, render_template, request, send_file, redirect, session, g
 import pymysql
-import modules
+import module
 import multiprocessing
 
 app = Flask(__name__)
@@ -68,14 +68,14 @@ def confronto():
         session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
         session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
 
-        proccesso1 = multiprocessing.Process(target=modules.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
+        proccesso1 = multiprocessing.Process(target=module.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
                                                                                    session.get('costo_totale_attuale_f2', None),
                                                                                    session.get('costo_totale_attuale_f3', None),
                                                                                    session.get('costo_totale_fareconsulenza_f1', None),
                                                                                    session.get('costo_totale_fareconsulenza_f2', None),
                                                                                    session.get('costo_totale_fareconsulenza_f3', None),
                                                                                    g.utente))
-        proccesso2 = multiprocessing.Process(target=modules.grafico_a_torta, args=(session.get('costo_totale_attuale', None),
+        proccesso2 = multiprocessing.Process(target=module.grafico_a_torta, args=(session.get('costo_totale_attuale', None),
                                                                                    session.get('costo_totale_fareconsulenza', None),
                                                                                    g.utente))
         proccesso1.start()
@@ -115,7 +115,7 @@ def scarica():
         mail_cliente = str(request.form['mail_cliente'])
         cellulare_cliente = str(request.form['numero_cliente'])
         tipologia_contratto = str(request.form['tipologia'])
-        modules.creare_pdf(
+        module.creare_pdf(
             nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
             session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), tipologia_contratto, tipologia_cliente, g.utente)
         return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
