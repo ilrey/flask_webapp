@@ -11,6 +11,7 @@ app.secret_key = "key"
 # FLASK APP
 @app.route('/')
 def login():
+    session["consumo1"] = None
     return render_template("login.html")
 
 
@@ -22,8 +23,8 @@ def before_request():
         g.utente = None
 
 
-@app.route('/calcolo', methods=["POST", "GET"])
-def index():
+@app.route('/pod', methods=["POST", "GET"])
+def pod():
     try:
         con = pymysql.connect(
             host="localhost",
@@ -40,33 +41,62 @@ def index():
             return redirect("/")
         else:
             session["utente"] = row[0]
-            return render_template("calcolo.html")
+            return render_template("pod.html")
     except Exception:
+        return redirect("/")
+
+
+@app.route('/calcolo', methods=["POST", "GET"])
+def index():
+    if g.utente:
+        return render_template("calcolo.html")
+    else:
         return redirect("/")
 
 
 @app.route('/confronto', methods=["POST", "GET"])
 def confronto():
     if g.utente:
-        session["consumof1"] = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
-        session["consumof2"] = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
-        session["consumof3"] = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
-        session["costo_totale_attuale_f1"] = round(float(request.form['costo_attuale_f1'])*session.get('consumof1', None), 1)
-        session["costo_totale_attuale_f2"] = round(float(request.form['costo_attuale_f2'])*session.get('consumof2', None), 1)
-        session["costo_totale_attuale_f3"] = round(float(request.form['costo_attuale_f3'])*session.get('consumof3', None), 1)
-        session["costo_totale_fareconsulenza_f1"] = round(float(request.form['costo_fareconsulenza_f1'])*session.get('consumof1', None), 1)
-        session["costo_totale_fareconsulenza_f2"] = round(float(request.form['costo_fareconsulenza_f2'])*session.get('consumof2', None), 1)
-        session["costo_totale_fareconsulenza_f3"] = round(float(request.form['costo_fareconsulenza_f3'])*session.get('consumof3', None), 1)
-        session["costo_totale_attuale"] = round(session.get('costo_totale_attuale_f1', None)+session.get('costo_totale_attuale_f2', None)+session.get('costo_totale_attuale_f3', None), 1)
-        session["costo_totale_fareconsulenza"] = round(session.get('costo_totale_fareconsulenza_f1', None)+session.get('costo_totale_fareconsulenza_f2', None)+session.get('costo_totale_fareconsulenza_f3', None), 1)
-        session["risparmio_euro_f1"] = round(session.get('costo_totale_attuale_f1', None)-session.get('costo_totale_fareconsulenza_f1', None), 1)
-        session["risparmio_euro_f2"] = round(session.get('costo_totale_attuale_f2', None)-session.get('costo_totale_fareconsulenza_f2', None), 1)
-        session["risparmio_euro_f3"] = round(session.get('costo_totale_attuale_f3', None)-session.get('costo_totale_fareconsulenza_f3', None), 1)
-        session["risparmio_euro_totale"] = round(session.get('risparmio_euro_f1', None)+session.get('risparmio_euro_f2', None)+session.get('risparmio_euro_f3', None), 1)
-        session["risparmio_percentuale_f1"] = round(100-(session.get('costo_totale_fareconsulenza_f1', None) * 100 / session.get('costo_totale_attuale_f1', None)), 1)
-        session["risparmio_percentuale_f2"] = round(100-(session.get('costo_totale_fareconsulenza_f2', None) * 100 / session.get('costo_totale_attuale_f2', None)), 1)
-        session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
-        session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
+        if session["consumo1"] is None:
+            session["consumof1"] = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
+            session["consumof2"] = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
+            session["consumof3"] = round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
+            session["costo_totale_attuale_f1"] = round(float(request.form['costo_attuale_f1'])*session.get('consumof1', None), 1)
+            session["costo_totale_attuale_f2"] = round(float(request.form['costo_attuale_f2'])*session.get('consumof2', None), 1)
+            session["costo_totale_attuale_f3"] = round(float(request.form['costo_attuale_f3'])*session.get('consumof3', None), 1)
+            session["costo_totale_fareconsulenza_f1"] = round(float(request.form['costo_fareconsulenza_f1'])*session.get('consumof1', None), 1)
+            session["costo_totale_fareconsulenza_f2"] = round(float(request.form['costo_fareconsulenza_f2'])*session.get('consumof2', None), 1)
+            session["costo_totale_fareconsulenza_f3"] = round(float(request.form['costo_fareconsulenza_f3'])*session.get('consumof3', None), 1)
+            session["costo_totale_attuale"] = round(session.get('costo_totale_attuale_f1', None)+session.get('costo_totale_attuale_f2', None)+session.get('costo_totale_attuale_f3', None), 1)
+            session["costo_totale_fareconsulenza"] = round(session.get('costo_totale_fareconsulenza_f1', None)+session.get('costo_totale_fareconsulenza_f2', None)+session.get('costo_totale_fareconsulenza_f3', None), 1)
+            session["risparmio_euro_f1"] = round(session.get('costo_totale_attuale_f1', None)-session.get('costo_totale_fareconsulenza_f1', None), 1)
+            session["risparmio_euro_f2"] = round(session.get('costo_totale_attuale_f2', None)-session.get('costo_totale_fareconsulenza_f2', None), 1)
+            session["risparmio_euro_f3"] = round(session.get('costo_totale_attuale_f3', None)-session.get('costo_totale_fareconsulenza_f3', None), 1)
+            session["risparmio_euro_totale"] = round(session.get('risparmio_euro_f1', None)+session.get('risparmio_euro_f2', None)+session.get('risparmio_euro_f3', None), 1)
+            session["risparmio_percentuale_f1"] = round(100-(session.get('costo_totale_fareconsulenza_f1', None) * 100 / session.get('costo_totale_attuale_f1', None)), 1)
+            session["risparmio_percentuale_f2"] = round(100-(session.get('costo_totale_fareconsulenza_f2', None) * 100 / session.get('costo_totale_attuale_f2', None)), 1)
+            session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
+            session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
+        else:
+            session["consumof1"] = session["consumof1"]+round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 1)
+            session["consumof2"] = session["consumof2"]+round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 1)
+            session["consumof3"] = session["consumof3"]+round(float(request.form['consumo_f3']) * (1 + float(request.form['perdite_rete'])/100), 1)
+            session["costo_totale_attuale_f1"] = session["costo_totale_attuale_f1"]+round(float(request.form['costo_attuale_f1'])*session.get('consumof1', None), 1)
+            session["costo_totale_attuale_f2"] = session["costo_totale_attuale_f2"]+round(float(request.form['costo_attuale_f2'])*session.get('consumof2', None), 1)
+            session["costo_totale_attuale_f3"] = session["costo_totale_attuale_f3"]+round(float(request.form['costo_attuale_f3'])*session.get('consumof3', None), 1)
+            session["costo_totale_fareconsulenza_f1"] = session["costo_totale_fareconsulenza_f1"]+round(float(request.form['costo_fareconsulenza_f1'])*session.get('consumof1', None), 1)
+            session["costo_totale_fareconsulenza_f2"] = session["costo_totale_fareconsulenza_f2"]+round(float(request.form['costo_fareconsulenza_f2'])*session.get('consumof2', None), 1)
+            session["costo_totale_fareconsulenza_f3"] = session["costo_totale_fareconsulenza_f3"]+round(float(request.form['costo_fareconsulenza_f3'])*session.get('consumof3', None), 1)
+            session["costo_totale_attuale"] = session["costo_totale_attuale"]+round(session.get('costo_totale_attuale_f1', None)+session.get('costo_totale_attuale_f2', None)+session.get('costo_totale_attuale_f3', None), 1)
+            session["costo_totale_fareconsulenza"] = round(session.get('costo_totale_fareconsulenza_f1', None)+session.get('costo_totale_fareconsulenza_f2', None)+session.get('costo_totale_fareconsulenza_f3', None), 1)
+            session["risparmio_euro_f1"] = session["risparmio_euro_f1"]+round(session.get('costo_totale_attuale_f1', None)-session.get('costo_totale_fareconsulenza_f1', None), 1)
+            session["risparmio_euro_f2"] = session["risparmio_euro_f2"]+round(session.get('costo_totale_attuale_f2', None)-session.get('costo_totale_fareconsulenza_f2', None), 1)
+            session["risparmio_euro_f3"] = session["risparmio_euro_f3"]+round(session.get('costo_totale_attuale_f3', None)-session.get('costo_totale_fareconsulenza_f3', None), 1)
+            session["risparmio_euro_totale"] = session["risparmio_euro_totale"]+round(session.get('risparmio_euro_f1', None)+session.get('risparmio_euro_f2', None)+session.get('risparmio_euro_f3', None), 1)
+            session["risparmio_percentuale_f1"] = session["risparmio_percentuale_f1"]+round(100-(session.get('costo_totale_fareconsulenza_f1', None) * 100 / session.get('costo_totale_attuale_f1', None)), 1)
+            session["risparmio_percentuale_f2"] = session["risparmio_percentuale_f2"]+round(100-(session.get('costo_totale_fareconsulenza_f2', None) * 100 / session.get('costo_totale_attuale_f2', None)), 1)
+            session["risparmio_percentuale_f3"] = session["risparmio_percentuale_f3"]+round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
+            session["risparmio_percentuale_totale"] = session["risparmio_percentuale_totale"]+round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
 
         proccesso1 = multiprocessing.Process(target=module.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
                                                                                   session.get('costo_totale_attuale_f2', None),
@@ -79,9 +109,7 @@ def confronto():
                                                                                   session.get('costo_totale_fareconsulenza', None),
                                                                                   g.utente))
         proccesso1.start()
-        proccesso1.terminate()
         proccesso2.start()
-        proccesso2.terminate()
 
         return render_template("confronto.html",
                                risparmio_euro_f1=session.get('risparmio_euro_f1', None),
