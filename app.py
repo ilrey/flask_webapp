@@ -117,7 +117,8 @@ def confronto():
                                                                                       g.utente))
             proccesso1.start()
             proccesso2.start()
-
+            session.pop('pod', None)
+            session.pop('num_pod', None)
             return render_template("confronto.html",
                                    risparmio_euro_f1=session.get('risparmio_euro_f1', None),
                                    risparmio_euro_f2=session.get('risparmio_euro_f2', None),
@@ -134,6 +135,14 @@ def confronto():
 @app.route('/dati', methods=["POST", "GET"])
 def dati():
     if g.utente:
+        session.pop('risparmio_euro_f1', None)
+        session.pop('risparmio_euro_f2', None)
+        session.pop('risparmio_euro_f3', None)
+        session.pop('risparmio_euro_totale', None)
+        session.pop('risparmio_percentuale_f1', None)
+        session.pop('risparmio_percentuale_f2', None)
+        session.pop('risparmio_percentuale_f3', None)
+        session.pop('risparmio_percentuale_totale', None)
         return render_template("dati.html")
     else:
         return redirect("/")
@@ -153,6 +162,8 @@ def scarica():
         module.creare_pdf(
             nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
             session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), tipologia_contratto, tipologia_cliente, g.utente)
+        session.pop('costo_totale_attuale', None)
+        session.pop('costo_totale_fareconsulenza', None)
         return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
     else:
         return redirect("/")
