@@ -38,7 +38,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare, username):
     fig, ax = plt.subplots(figsize=(8, 3), subplot_kw=dict(aspect="equal"))
     recipe = [(str(ctot_attuale)+"€ Costo attuale fornitore"),
               (str(ctot_fare)+"€ Costo Fareconsulenza"),
-              (str(round((ctot_attuale-ctot_fare), 1))+"€ RISPARMIO")]
+              (str(ctot_attuale-ctot_fare)+"€ RISPARMIO")]
     data = [ctot_attuale, ctot_fare, (ctot_attuale-ctot_fare)]
     colors = ['red', 'orange', 'green']
     wedges, texts = ax.pie(data, wedgeprops=dict(width=0.5), startangle=-40, colors=colors)
