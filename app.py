@@ -25,25 +25,28 @@ def before_request():
 
 @app.route('/pod', methods=["POST", "GET"])
 def pod():
-    try:
-        con = pymysql.connect(
-            host="localhost",
-            user=str(str(request.form['login'])),
-            password=str(str(request.form['password'])),
-            database="fareconsulenzadb")
-        cur = con.cursor()
-        cur.execute(
-            "select indice from utenti where username='"
-            + str(request.form['login']) + "' and password = '"
-            + str(request.form['password']) + "'")
-        row = cur.fetchone()
-        if row is None:
+    if g.utente:
+        return render_template("pod.html")
+    else:
+        try:
+            con = pymysql.connect(
+                host="localhost",
+                user=str(str(request.form['login'])),
+                password=str(str(request.form['password'])),
+                database="fareconsulenzadb")
+            cur = con.cursor()
+            cur.execute(
+                "select indice from utenti where username='"
+                + str(request.form['login']) + "' and password = '"
+                + str(request.form['password']) + "'")
+            row = cur.fetchone()
+            if row is None:
+                return redirect("/")
+            else:
+                session["utente"] = row[0]
+                return render_template("pod.html")
+        except Exception:
             return redirect("/")
-        else:
-            session["utente"] = row[0]
-            return render_template("pod.html")
-    except Exception:
-        return redirect("/")
 
 
 @app.route('/calcolo', methods=["POST", "GET"])
