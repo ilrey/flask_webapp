@@ -166,6 +166,8 @@ def scarica():
             session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), tipologia_contratto, tipologia_cliente, g.utente)
         session.pop('costo_totale_attuale', None)
         session.pop('costo_totale_fareconsulenza', None)
+        if mail_cliente:
+            module.send_mail(mail_cliente, nome_cliente, tipologia_cliente, g.utente)
         return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
     else:
         return redirect("/")

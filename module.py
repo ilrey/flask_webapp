@@ -3,6 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 plt.switch_backend('agg')
 
@@ -87,5 +92,26 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
     pdf.output(r'static/'+username+'confronto.pdf')
     os.remove("static/img/"+username+"_graficobarre.png")
     os.remove("static/img/"+username+"_graficotorta.png")
-    # if mailcliente !='e-mail' and mailcliente != '':
-    #    inviamail(mailcliente, nomecliente, nominativo)
+
+
+# MAIL SENDER FUNCTION
+def send_mail(mailcliente, nomecliente, nomenclatura, username):
+    body = 'Gentile '+str(nomenclatura)+', '+str(nomecliente)+' come da lei richiesto alleghiamo il confronto delle sue utenze'
+    message = MIMEMultipart()
+    message['From'] = 'inviodocumenti.fareconsulenza@gmail.com'
+    message['To'] = mailcliente
+    message['Subject'] = 'Comparazioni costi fattura'
+    message.attach(MIMEText(body, 'plain'))
+    pdfname = r'static/'+username+'confronto.pdf'
+    binary_pdf = open(pdfname, 'rb')
+    payload = MIMEBase('application', 'octate-stream', Name='confronto.pdf')
+    payload.set_payload(binary_pdf.read())
+    encoders.encode_base64(payload)
+    payload.add_header('Content-Decomposition', 'attachment', filename=pdfname)
+    message.attach(payload)
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session.starttls()
+    session.login('inviodocumenti.fareconsulenza@gmail.com', str(input()))
+    session.sendmail('inviodocumenti.fareconsulenza@gmail.com', mailcliente, message.as_string())
+    session.quit()
+    print('Mail Sent')
