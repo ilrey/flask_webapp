@@ -115,6 +115,8 @@ def confronto():
             proccesso2 = multiprocessing.Process(target=module.grafico_a_torta, args=(session.get('costo_totale_attuale', None),
                                                                                       session.get('costo_totale_fareconsulenza', None),
                                                                                       g.utente))
+            proccesso1.daemon = True
+            proccesso2.daemon = True
             proccesso1.start()
             proccesso2.start()
             session.pop('pod', None)
@@ -170,4 +172,4 @@ def scarica():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', threaded=True)
+    app.run(debug=False, host='0.0.0.0', threaded=True)
