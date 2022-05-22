@@ -11,8 +11,11 @@ app.secret_key = "key"
 # FLASK APP
 @app.route('/')
 def login():
-    session["consumof1"] = None
-    return render_template("login.html")
+    if g.utente:
+        session["consumof1"] = None
+        return render_template("home.html")
+    else:
+        return render_template("login.html")
 
 
 @app.before_request
@@ -23,10 +26,10 @@ def before_request():
         g.utente = None
 
 
-@app.route('/pod', methods=["POST", "GET"])
-def pod():
+@app.route('/home', methods=["POST", "GET"])
+def home():
     if g.utente:
-        return render_template("pod.html")
+        return render_template("home.html")
     else:
         try:
             con = pymysql.connect(
@@ -44,9 +47,17 @@ def pod():
                 return redirect("/")
             else:
                 session["utente"] = row[0]
-                return render_template("pod.html")
+                return render_template("home.html")
         except Exception:
             return redirect("/")
+
+
+@app.route('/pod', methods=["POST", "GET"])
+def pod():
+    if g.utente:
+        return render_template("pod.html")
+    else:
+        return redirect("/")
 
 
 @app.route('/calcolo', methods=["POST", "GET"])
