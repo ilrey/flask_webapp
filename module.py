@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from fpdf import FPDF
-import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -90,8 +89,6 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
                    + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
 
     pdf.output(r'static/'+username+'confronto.pdf')
-    os.remove("static/img/"+username+"_graficobarre.png")
-    os.remove("static/img/"+username+"_graficotorta.png")
 
 
 # MAIL SENDER FUNCTION
