@@ -111,7 +111,7 @@ def send_mail(mailcliente, nomecliente, nomenclatura, username):
     message.attach(payload)
     session = smtplib.SMTP('smtp.gmail.com', 587)
     session.starttls()
-    session.login('inviodocumenti.fareconsulenza@gmail.com', str(input()))
+    session.login('inviodocumenti.fareconsulenza@gmail.com', str(input("INSERISCI PASSWORD: ")))
     session.sendmail('inviodocumenti.fareconsulenza@gmail.com', mailcliente, message.as_string())
     session.quit()
     print('Mail Sent')

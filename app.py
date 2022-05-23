@@ -11,8 +11,8 @@ app.secret_key = "key"
 # FLASK APP
 @app.route('/')
 def login():
+    session["consumof1"] = None
     if g.utente:
-        session["consumof1"] = None
         return render_template("home.html")
     else:
         return render_template("login.html")
@@ -188,4 +188,4 @@ def scarica():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', threaded=True)
+    app.run(debug=True, host='0.0.0.0', threaded=True)
