@@ -1,5 +1,5 @@
 # LIBRARIES AND FLASK FRAMEWORK
-from flask import Flask, render_template, request, send_file, redirect, session, g
+from flask import Flask, render_template, request, redirect, session, g
 import pymysql
 import module
 import multiprocessing
@@ -172,6 +172,8 @@ def dati():
                 session.pop('risparmio_percentuale_f3', None)
                 session.pop('risparmio_percentuale_totale', None)
                 return render_template("dati.html")
+            else:
+                return redirect("/confronto")
         except Exception as e:
             print(e)
             return redirect("/confronto")
@@ -192,7 +194,7 @@ def scarica():
             session.pop('costo_totale_fareconsulenza', None)
             if mail_cliente:
                 module.send_mail(mail_cliente, str(request.form['nome_cognome_cliente']), str(request.form['nomenclatura']), g.utente)
-            return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
+            return render_template('download.html', file='../static/'+g.utente+'confronto.pdf')
         except Exception as e:
             print(e)
             return redirect("/dati")
