@@ -58,7 +58,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare, username):
 
 
 # PDF CREATION FUNCTION
-def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailconsulente,
+def creare_pdf(nomecliente, nomeconsulente, numconsulente, mailconsulente,
                costo_totale_att, costo_totale_fare, tipologia, nominativo, username):
     pdf = FPDF()
     pdf.add_page()

@@ -167,21 +167,15 @@ def dati():
 @app.route('/scarica', methods=["POST", "GET"])
 def scarica():
     if g.utente:
-        nome_consulente = str(request.form['nome_cognome_consulente'])
-        mail_consulente = str(request.form['mail_consulente'])
-        cellulare_consulente = str(request.form['numero_consulente'])
-        tipologia_cliente = str(request.form['nomenclatura'])
-        nome_cliente = str(request.form['nome_cognome_cliente'])
         mail_cliente = str(request.form['mail_cliente'])
         cellulare_cliente = str(request.form['numero_cliente'])
-        tipologia_contratto = str(request.form['tipologia'])
         module.creare_pdf(
-            nome_cliente, mail_cliente, nome_consulente, cellulare_consulente, mail_consulente,
-            session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), tipologia_contratto, tipologia_cliente, g.utente)
+            str(request.form['nome_cognome_cliente']), str(request.form['nome_cognome_consulente']), str(request.form['numero_consulente']), str(request.form['mail_consulente']),
+            session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), str(request.form['tipologia']), str(request.form['nomenclatura']), g.utente)
         session.pop('costo_totale_attuale', None)
         session.pop('costo_totale_fareconsulenza', None)
         if mail_cliente:
-            module.send_mail(mail_cliente, nome_cliente, tipologia_cliente, g.utente)
+            module.send_mail(mail_cliente, str(request.form['nome_cognome_cliente']), str(request.form['nomenclatura']), g.utente)
         return send_file(r'static/'+g.utente+'confronto.pdf', as_attachment=True)
     else:
         return redirect("/")
