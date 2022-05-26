@@ -68,7 +68,8 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
     pdf.image("static/img/bottom.jpg", 0, 270, WIDTH)
     pdf.image("static/img/"+username+"_graficobarre.png", 5, 70, WIDTH/2-5)
     pdf.image("static/img/"+username+"_graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
-    pdf.add_font('Arial', '', 'c:/windows/fonts/arial.ttf', uni=True)  # added line
+    pdf.add_font('Arial', '', r'./static/fonts/arial.ttf', uni=True)
+    pdf.add_font('Arial Grassetto', '', r'./static/fonts/arialbd.ttf', uni=True)
     pdf.set_font('Arial', '', 12)
     moltiplicatore = 6
 
@@ -76,17 +77,76 @@ def creare_pdf(nomecliente, mailcliente, nomeconsulente, numconsulente, mailcons
         moltiplicatore = 12
 
     pdf.multi_cell(0, 5, '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n'
-                   + 'Gentile '+nominativo+' '
-                   + str(nomecliente) + '\n' + '\n'
-                   + 'In alto trova il dettaglio dei costi sostenuti per la Sua utenza che, in merito alla fattura analizzata le ha portato un costo della componente di €'
-                   + str(costo_totale_att)+'.' + '\n' + '\n'
-                   + 'Come potrà notare dal grafico, in caso avesse avuto il gestore da noi prospettato, a parità di consumi, avrebbe sostenuto un costo di €'
-                   + str(costo_totale_fare)+' con conseguente beneficio di €'
-                   + str(round((costo_totale_att-costo_totale_fare), 1))+'.' + '\n' + '\n' + 'Tale costo Le avrebbe consentito di risparmiare €'
-                   + str(round(round(moltiplicatore*(costo_totale_att-costo_totale_fare)), 1))
-                   + ' nell’ultimo anno! A questo si aggiunge una decrescita dei costi di iva che sono direttamente proporzionali all’imponibile dei costi generali.'
-                   + '\n' + '\n' + 'Il Consulente a cui sono affidate le Sue utenze, è a Sua disposizione in NEL TEMPO per seguire i costi e tenerli SEMPRE aggiornati alle migliori condizioni di mercato.'
-                   + '\n' + '\n' + '\n' + str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
+                   + 'Gentile '+nominativo+' ' + str(nomecliente) + '\n' + '\n'
+                   + 'In alto trova il dettaglio dei costi sostenuti per la Sua utenza che, in merito alla fattura analizzata le ha portato un costo della componente di')
+    pdf.set_xy(pdf.get_x()+77, pdf.get_y()-5)
+    pdf.set_text_color(255, 0, 0)  # ROSSO
+    pdf.multi_cell(0, 5, '€' + str(costo_totale_att) + '\n' + '\n', align='J')
+    pdf.set_text_color(0, 0, 0)  # NERO
+    pdf.multi_cell(0, 5, 'Come potrà notare dal grafico, in caso avesse avuto il gestore da noi prospettato, a parità di consumi, avrebbe sostenuto un costo di ')
+    pdf.set_xy(pdf.get_x() + 77, pdf.get_y() - 5)
+    pdf.set_text_color(255, 140, 0)  # ARANCIONE
+    pdf.multi_cell(0, 5, '€' + str(costo_totale_fare))
+    lunghezza = len(str(costo_totale_fare))
+    if lunghezza == 1:
+        setting = 84
+    elif lunghezza == 2:
+        setting = 86
+    elif lunghezza == 3:
+        setting = 88.5
+    elif lunghezza == 4:
+        setting = 90.5
+    elif lunghezza == 5:
+        setting = 93.5
+    elif lunghezza == 6:
+        setting = 95.5
+    else:
+        setting = 95.5 + lunghezza
+    pdf.set_xy(pdf.get_x() + setting, pdf.get_y() - 5)
+    pdf.set_text_color(0, 0, 0)
+    pdf.multi_cell(0, 5, 'con conseguente beneficio di')
+    pdf.set_xy(pdf.get_x() + setting+57, pdf.get_y() - 5)
+    pdf.set_text_color(34, 139, 34)  # VERDE
+    pdf.multi_cell(0, 5, '€'+str(round((costo_totale_att-costo_totale_fare), 1))+'.' + '\n' + '\n')
+    pdf.set_text_color(0, 0, 0)  # NERO
+    pdf.multi_cell(0, 5, 'Tale costo Le avrebbe consentito di risparmiare')
+    pdf.set_xy(pdf.get_x() + 91, pdf.get_y() - 5)
+    pdf.set_text_color(34, 139, 34)  # VERDE
+    pdf.multi_cell(0, 5, '€'+str(round(round(moltiplicatore*(costo_totale_att-costo_totale_fare)), 1)))
+    lunghezza = len(str((round(round(moltiplicatore*(costo_totale_att-costo_totale_fare)), 1))))
+    if lunghezza == 1:
+        setting = 97.5
+    elif lunghezza == 2:
+        setting = 99.5
+    elif lunghezza == 3:
+        setting = 102.5
+    elif lunghezza == 4:
+        setting = 104.5
+    elif lunghezza == 5:
+        setting = 106.5
+    elif lunghezza == 6:
+        setting = 108.5
+    else:
+        setting = 108.5 + lunghezza
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_xy(pdf.get_x() + setting, pdf.get_y() - 5)
+    pdf.multi_cell(0, 5, 'nell’ultimo anno!')
+    pdf.multi_cell(0, 5, 'A questo si aggiunge una decrescita dei costi di iva che sono direttamente proporzionali all’imponibile dei costi generali.'
+                   + '\n' + '\n' + 'Il Consulente a cui sono affidate le Sue utenze, è a Sua disposizione')
+    pdf.set_font('Arial Grassetto', '', 12)
+    pdf.set_xy(140.5, pdf.get_y() - 5)
+    pdf.multi_cell(0, 5, 'NEL TEMPO')
+    pdf.set_font('Arial', '', 12)
+    pdf.set_xy(167, pdf.get_y() - 5)
+    pdf.multi_cell(0, 5, 'per seguire i')
+    pdf.multi_cell(0, 5, 'costi e tenerli')
+    pdf.set_font('Arial Grassetto', '', 12)
+    pdf.set_xy(36, pdf.get_y() - 5)
+    pdf.multi_cell(0, 5, 'SEMPRE')
+    pdf.set_font('Arial', '', 12)
+    pdf.set_xy(55, pdf.get_y() - 5)
+    pdf.multi_cell(0, 5, 'aggiornati alle migliori condizioni di mercato.' + '\n' + '\n' + '\n')
+    pdf.multi_cell(0, 5, str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
 
     pdf.output(r'static/'+username+'confronto.pdf')
 
@@ -108,7 +168,7 @@ def send_mail(mailcliente, nomecliente, nomenclatura, username):
     message.attach(payload)
     session = smtplib.SMTP('smtp.gmail.com', 587)
     session.starttls()
-    session.login('inviodocumenti.fareconsulenza@gmail.com', str(input("INSERISCI PASSWORD: ")))
+    session.login('inviodocumenti.fareconsulenza@gmail.com', 'PASSWORD')
     session.sendmail('inviodocumenti.fareconsulenza@gmail.com', mailcliente, message.as_string())
     session.quit()
     print('Mail Sent')
