@@ -15,7 +15,7 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax'
 )
 modules.csrf.csrf.init_app(app)  # CSRF Protection
-secure_headers = secure.Secure()
+secure_headers = secure.Secure()  # XSS Protection
 
 
 # FLASK ROUTES
