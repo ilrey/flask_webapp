@@ -6,7 +6,13 @@ import multiprocessing
 
 # FLASK APP
 app = Flask(__name__)
-app.secret_key = "key"
+app.config.update(
+    DEBUG=True,
+    SECRET_KEY='key',
+    # SESSION_COOKIE_SECURE=True,  (use it when the connection is encrypt HTTPS)
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax'
+)
 modules.csrf.csrf.init_app(app)  # CSRF Protection
 
 
@@ -205,4 +211,4 @@ def scarica():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', threaded=True)
+    app.run(host='0.0.0.0', threaded=True)
