@@ -11,6 +11,7 @@
          <div class="title">INSERISCI I DATI</div>
          <div class="content">
             <form action="scarica" method="post">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                <br>
                <span class="details">CONSULENTE:</span>
                <div class="user-details">

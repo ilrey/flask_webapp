@@ -11,6 +11,7 @@
          <div class="title">Quanti sono i POD?</div>
          <div class="content">
             <form action="calcolo" method="post">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                <div class="user-details">
                   <div class="input-box">
                      <input type="number" min="1" name="numero_pod" placeholder="Numero POD" autocomplete="off" required>

@@ -1,14 +1,16 @@
 # LIBRARIES AND FLASK FRAMEWORK
 from flask import Flask, render_template, request, redirect, session, g
 import pymysql
-import module
+import modules
 import multiprocessing
 
+# FLASK APP
 app = Flask(__name__)
 app.secret_key = "key"
+modules.csrf.csrf.init_app(app)  # CSRF Protection
 
 
-# FLASK APP
+# FLASK ROUTES
 @app.route('/')
 def login():
     session["consumof1"] = None
@@ -126,16 +128,16 @@ def confronto():
             if session["pod"] != 0:
                 return render_template("calcolo.html", numero_fattura=session.get('num_pod', None))
             else:
-                proccesso1 = multiprocessing.Process(target=module.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
-                                                                                          session.get('costo_totale_attuale_f2', None),
-                                                                                          session.get('costo_totale_attuale_f3', None),
-                                                                                          session.get('costo_totale_fareconsulenza_f1', None),
-                                                                                          session.get('costo_totale_fareconsulenza_f2', None),
-                                                                                          session.get('costo_totale_fareconsulenza_f3', None),
-                                                                                          g.utente))
-                proccesso2 = multiprocessing.Process(target=module.grafico_a_torta, args=(session.get('costo_totale_attuale', None),
-                                                                                          session.get('costo_totale_fareconsulenza', None),
-                                                                                          g.utente))
+                proccesso1 = multiprocessing.Process(target=modules.module.grafico_a_barre, args=(session.get('costo_totale_attuale_f1', None),
+                                                                                                  session.get('costo_totale_attuale_f2', None),
+                                                                                                  session.get('costo_totale_attuale_f3', None),
+                                                                                                  session.get('costo_totale_fareconsulenza_f1', None),
+                                                                                                  session.get('costo_totale_fareconsulenza_f2', None),
+                                                                                                  session.get('costo_totale_fareconsulenza_f3', None),
+                                                                                                  g.utente))
+                proccesso2 = multiprocessing.Process(target=modules.module.grafico_a_torta, args=(session.get('costo_totale_attuale', None),
+                                                                                                  session.get('costo_totale_fareconsulenza', None),
+                                                                                                  g.utente))
                 proccesso1.daemon = True
                 proccesso2.daemon = True
                 proccesso1.start()
@@ -187,13 +189,13 @@ def scarica():
         try:
             mail_cliente = str(request.form['mail_cliente'])
             cellulare_cliente = str(request.form['numero_cliente'])
-            module.creare_pdf(
+            modules.module.creare_pdf(
                 str(request.form['nome_cognome_cliente']), str(request.form['nome_cognome_consulente']), str(request.form['numero_consulente']), str(request.form['mail_consulente']),
                 session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), str(request.form['tipologia']), str(request.form['nomenclatura']), g.utente)
             session.pop('costo_totale_attuale', None)
             session.pop('costo_totale_fareconsulenza', None)
             if mail_cliente:
-                module.send_mail(mail_cliente, str(request.form['nome_cognome_cliente']), str(request.form['nomenclatura']), g.utente)
+                modules.module.send_mail(mail_cliente, str(request.form['nome_cognome_cliente']), str(request.form['nomenclatura']), g.utente)
             return render_template('download.html', file='../static/'+g.utente+'confronto.pdf')
         except Exception as e:
             print(e)

@@ -12,6 +12,7 @@
             <div class="screen">
                 <div class="screen__content">
                     <form class="login" action="home" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="login__field">
                             <i class="login__icon fas fa-user"></i>
                             <input type="text" class="login__input" name="login" placeholder="User name / Email" required />
