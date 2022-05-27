@@ -1,5 +1,6 @@
 # LIBRARIES AND FLASK FRAMEWORK
 from flask import Flask, render_template, request, redirect, session, g
+import secure
 import pymysql
 import modules
 import multiprocessing
@@ -14,6 +15,7 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax'
 )
 modules.csrf.csrf.init_app(app)  # CSRF Protection
+secure_headers = secure.Secure()
 
 
 # FLASK ROUTES
@@ -32,6 +34,12 @@ def before_request():
         g.utente = session["utente"]
     else:
         g.utente = None
+
+
+@app.after_request
+def set_secure_headers(response):
+    secure_headers.framework.flask(response)
+    return response
 
 
 @app.route('/home', methods=["POST", "GET"])
