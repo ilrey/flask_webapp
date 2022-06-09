@@ -207,7 +207,8 @@ def confronto():
 def dati():
     if g.utente:
         try:
-            if session["risparmio_euro_f1"]:
+            if session["consumof1"]:
+                print('ecco i dati')
                 return render_template("dati.html")
             else:
                 return redirect("/confronto")
