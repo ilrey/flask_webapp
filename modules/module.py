@@ -59,7 +59,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare, username):
 
 # PDF CREATION FUNCTION
 def creare_pdf(nomecliente, nomeconsulente, numconsulente, mailconsulente,
-               costo_totale_att, costo_totale_fare, tipologia, nominativo, username):
+               costo_totale_att, costo_totale_fare, costo_totale_attuale, nominativo, username):
     pdf = FPDF()
     pdf.add_page()
     WIDTH = 210
@@ -71,11 +71,6 @@ def creare_pdf(nomecliente, nomeconsulente, numconsulente, mailconsulente,
     pdf.add_font('Arial', '', r'./static/fonts/arial.ttf', uni=True)
     pdf.add_font('Arial Grassetto', '', r'./static/fonts/arialbd.ttf', uni=True)
     pdf.set_font('Arial', '', 12)
-    moltiplicatore = 6
-
-    if tipologia == 'mensile':
-        moltiplicatore = 12
-
     pdf.multi_cell(0, 5, '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n'
                    + 'Gentile '+nominativo+' ' + str(nomecliente) + '\n' + '\n'
                    + 'In alto trova il dettaglio dei costi sostenuti per la Sua utenza che, in merito alla fattura analizzata le ha portato un costo della componente di')
@@ -107,13 +102,13 @@ def creare_pdf(nomecliente, nomeconsulente, numconsulente, mailconsulente,
     pdf.multi_cell(0, 5, 'con conseguente beneficio di')
     pdf.set_xy(pdf.get_x() + setting+57, pdf.get_y() - 5)
     pdf.set_text_color(34, 139, 34)  # VERDE
-    pdf.multi_cell(0, 5, '€'+str(round((costo_totale_att-costo_totale_fare), 1))+'.' + '\n' + '\n')
+    pdf.multi_cell(0, 5, '€'+str(round((costo_totale_att-costo_totale_fare), 1))+ '\n' + '\n')
     pdf.set_text_color(0, 0, 0)  # NERO
     pdf.multi_cell(0, 5, 'Tale costo Le avrebbe consentito di risparmiare')
     pdf.set_xy(pdf.get_x() + 91, pdf.get_y() - 5)
     pdf.set_text_color(34, 139, 34)  # VERDE
-    pdf.multi_cell(0, 5, '€'+str(round(round(moltiplicatore*(costo_totale_att-costo_totale_fare)), 1)))
-    lunghezza = len(str((round(round(moltiplicatore*(costo_totale_att-costo_totale_fare)), 1))))
+    pdf.multi_cell(0, 5, '€'+costo_totale_attuale)
+    lunghezza = len(costo_totale_attuale)
     if lunghezza == 1:
         setting = 97.5
     elif lunghezza == 2:

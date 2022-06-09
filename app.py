@@ -21,7 +21,6 @@ secure_headers = secure.Secure()  # XSS Protection
 # FLASK ROUTES
 @app.route('/')
 def login():
-    session["consumof1"] = None
     if g.utente:
         return render_template("home.html")
     else:
@@ -72,6 +71,26 @@ def home():
 @app.route('/pod', methods=["POST", "GET"])
 def pod():
     if g.utente:
+        session.pop('pod', None)
+        session.pop('num_pod', None)
+        session.pop('costo_totale_attuale_f1', None)
+        session.pop('costo_totale_attuale_f2', None)
+        session.pop('costo_totale_attuale_f3', None)
+        session.pop('costo_totale_fareconsulenza_f1', None)
+        session.pop('costo_totale_fareconsulenza_f2', None)
+        session.pop('costo_totale_fareconsulenza_f3', None)
+        session.pop('costo_totale_attuale', None)
+        session.pop('risparmio_euro_f1', None)
+        session.pop('risparmio_euro_f2', None)
+        session.pop('risparmio_euro_f3', None)
+        session.pop('risparmio_euro_totale', None)
+        session.pop('risparmio_percentuale_f1', None)
+        session.pop('risparmio_percentuale_f2', None)
+        session.pop('risparmio_percentuale_f3', None)
+        session.pop('risparmio_percentuale_totale', None)
+        session.pop('r_risparmio_euro_totale', None)
+        session.pop('risparmio_annuale', None)
+        session["consumof1"] = None
         return render_template("pod.html")
     else:
         return redirect("/")
@@ -83,7 +102,6 @@ def index():
         try:
             session["pod"] = int(request.form['numero_pod'])
             session["num_pod"] = 1
-            print(session.get('pod', None))
             return render_template("calcolo.html", numero_fattura=session.get('pod', None) - session.get('pod', None) + 1)
         except Exception as e:
             print(e)
@@ -116,6 +134,11 @@ def confronto():
                 session["risparmio_percentuale_f2"] = round(100-(session.get('costo_totale_fareconsulenza_f2', None) * 100 / session.get('costo_totale_attuale_f2', None)), 1)
                 session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
                 session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
+                if str(request.form['tipologia']) == 'mensile':
+                    moltiplicatore = 12
+                else:
+                    moltiplicatore = 6
+                session["risparmio_annuale"] = round(moltiplicatore * session.get('risparmio_euro_totale', None), 1)
             else:
                 session["consumof1"] = round(float(request.form['consumo_f1']) * (1 + float(request.form['perdite_rete'])/100), 2)
                 session["consumof2"] = round(float(request.form['consumo_f2']) * (1 + float(request.form['perdite_rete'])/100), 2)
@@ -136,6 +159,14 @@ def confronto():
                 session["risparmio_percentuale_f2"] = round(100-(session.get('costo_totale_fareconsulenza_f2', None) * 100 / session.get('costo_totale_attuale_f2', None)), 1)
                 session["risparmio_percentuale_f3"] = round(100-(session.get('costo_totale_fareconsulenza_f3', None) * 100 / session.get('costo_totale_attuale_f3', None)), 1)
                 session["risparmio_percentuale_totale"] = round(100-(session.get('costo_totale_fareconsulenza', None) * 100 / session.get('costo_totale_attuale', None)), 1)
+                session["r_risparmio_euro_totale"] = (round(float(request.form['costo_attuale_f1'])*session.get('consumof1', None), 2)+round(float(request.form['costo_attuale_f2'])*session.get('consumof2', None), 2)+round(float(request.form['costo_attuale_f3'])*session.get('consumof3', None), 2)) - \
+                                                     (round(float(request.form['costo_fareconsulenza_f1'])*session.get('consumof1', None), 2)+round(float(request.form['costo_fareconsulenza_f2'])*session.get('consumof2', None), 2)+round(float(request.form['costo_fareconsulenza_f3'])*session.get('consumof3', None), 2))
+
+                if str(request.form['tipologia']) == 'mensile':
+                    moltiplicatore = 12
+                else:
+                    moltiplicatore = 6
+                session["risparmio_annuale"] = session["risparmio_annuale"]+round(moltiplicatore * session.get('r_risparmio_euro_totale', None), 1)
             session["num_pod"] = session["num_pod"]+1
             session["pod"] = session["pod"]-1
 
@@ -156,8 +187,6 @@ def confronto():
                 proccesso2.daemon = True
                 proccesso1.start()
                 proccesso2.start()
-                session.pop('pod', None)
-                session.pop('num_pod', None)
                 return render_template("confronto.html",
                                        risparmio_euro_f1=session.get('risparmio_euro_f1', None),
                                        risparmio_euro_f2=session.get('risparmio_euro_f2', None),
@@ -179,14 +208,6 @@ def dati():
     if g.utente:
         try:
             if session["risparmio_euro_f1"]:
-                session.pop('risparmio_euro_f1', None)
-                session.pop('risparmio_euro_f2', None)
-                session.pop('risparmio_euro_f3', None)
-                session.pop('risparmio_euro_totale', None)
-                session.pop('risparmio_percentuale_f1', None)
-                session.pop('risparmio_percentuale_f2', None)
-                session.pop('risparmio_percentuale_f3', None)
-                session.pop('risparmio_percentuale_totale', None)
                 return render_template("dati.html")
             else:
                 return redirect("/confronto")
@@ -205,9 +226,7 @@ def scarica():
             cellulare_cliente = str(request.form['numero_cliente'])
             modules.module.creare_pdf(
                 str(request.form['nome_cognome_cliente']), str(request.form['nome_cognome_consulente']), str(request.form['numero_consulente']), str(request.form['mail_consulente']),
-                session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), str(request.form['tipologia']), str(request.form['nomenclatura']), g.utente)
-            session.pop('costo_totale_attuale', None)
-            session.pop('costo_totale_fareconsulenza', None)
+                session.get('costo_totale_attuale', None), session.get('costo_totale_fareconsulenza', None), str(session.get('risparmio_annuale', None)), str(request.form['nomenclatura']), g.utente)
             if mail_cliente:
                 modules.module.send_mail(mail_cliente, str(request.form['nome_cognome_cliente']), str(request.form['nomenclatura']), g.utente)
             return render_template('download.html', file='../static/'+g.utente+'confronto.pdf')

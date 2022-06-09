@@ -15,44 +15,47 @@
                <div class="user-details">
                   <div class="input-box">
                      <span class="details">F1</span>
-                     <input type="number" step=".01" name="consumo_f1" placeholder="Consumo Kw/h" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="consumo_f1" placeholder="Consumo Kw/h" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details">F2</span>
-                     <input type="number" step=".01" name="consumo_f2" placeholder="Consumo Kw/h" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="consumo_f2" placeholder="Consumo Kw/h" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details">F3</span>
-                     <input type="number" step=".01" name="consumo_f3" placeholder="Consumo Kw/h" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="consumo_f3" placeholder="Consumo Kw/h" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details">Perdite di rete</span>
-                     <input type="number" step=".01" name="perdite_rete" placeholder="BT 10.2 e MT 3.8" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="perdite_rete" placeholder="BT 10.2 e MT 3.8" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details">Attuale fornitore:</span>
-                     <input type="number" step=".01" name="costo_attuale_f1" placeholder="Costo F1" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="costo_attuale_f1" placeholder="Costo F1" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details"></span><br>
-                     <input type="number" step=".01" name="costo_attuale_f2" placeholder="Costo F2" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="costo_attuale_f2" placeholder="Costo F2" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details"></span><br>
-                     <input type="number" step=".01" name="costo_attuale_f3" placeholder="Costo F3" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="costo_attuale_f3" placeholder="Costo F3" autocomplete="off" required>
                   </div>
-                  <div class="input-box"></div>
+                  <select name="tipologia">
+                     <option value="bimestrale">Bimestrale</option>
+                     <option value="mensile">Mensile</option>
+                  </select>
                   <div class="input-box">
                      <span class="details">Fareconsulenza:</span>
-                     <input type="number" step=".01" name="costo_fareconsulenza_f1" placeholder="Costo F1" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="costo_fareconsulenza_f1" placeholder="Costo F1" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details"></span><br>
-                     <input type="number" step=".01" name="costo_fareconsulenza_f2" placeholder="Costo F2" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="costo_fareconsulenza_f2" placeholder="Costo F2" autocomplete="off" required>
                   </div>
                   <div class="input-box">
                      <span class="details"></span><br>
-                     <input type="number" step=".01" name="costo_fareconsulenza_f3" placeholder="Costo F3" autocomplete="off" required>
+                     <input type="number" step=".01" min="0.01" name="costo_fareconsulenza_f3" placeholder="Costo F3" autocomplete="off" required>
                   </div>
                   <div class="input-box"></div>
                </div>

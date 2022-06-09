@@ -159,3 +159,16 @@ form .user-details .input-box{
     flex-direction: column;
   }
 }
+
+select {
+        height: 35px;
+        width: 22%;
+        margin-bottom: 30px;
+        margin-top: 28px;
+        outline: 0;
+        background: #FF8D29;
+        color: #fff;
+        border: none;
+        padding: 4px;
+        border-radius: 7px;
+      }
