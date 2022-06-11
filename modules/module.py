@@ -54,7 +54,7 @@ def grafico_a_torta(ctot_attuale, ctot_fare, username):
         ax.annotate(recipe[i], xy=(x, y), xytext=(1.35 * np.sign(x), 1.4 * y),
                     horizontalalignment=horizontalalignment, **kw)
 
-    plt.savefig('static/img/'+username+'_graficotorta.png')
+    plt.savefig(f'static/img/{username}_graficotorta.png')
 
 
 # PDF CREATION FUNCTION
@@ -66,67 +66,50 @@ def creare_pdf(nomecliente, nomeconsulente, numconsulente, mailconsulente,
     HEIGHT = 297
     pdf.image("static/img/top.jpg", 0, 0, WIDTH)
     pdf.image("static/img/bottom.jpg", 0, 270, WIDTH)
-    pdf.image("static/img/"+username+"_graficobarre.png", 5, 70, WIDTH/2-5)
-    pdf.image("static/img/"+username+"_graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
+    pdf.image(f"static/img/{username}_graficobarre.png", 5, 70, WIDTH/2-5)
+    pdf.image(f"static/img/{username}_graficotorta.png", HEIGHT/2-45, 70, WIDTH / 2 - 5)
     pdf.add_font('Arial', '', r'./static/fonts/arial.ttf', uni=True)
     pdf.add_font('Arial Grassetto', '', r'./static/fonts/arialbd.ttf', uni=True)
     pdf.set_font('Arial', '', 12)
-    pdf.multi_cell(0, 5, '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n'
-                   + 'Gentile '+nominativo+' ' + str(nomecliente) + '\n' + '\n'
+
+    def xy_setting(l_stringa, pdf_x):
+        inc = pdf_x
+        setting = None
+        for i in range(len(str(l_stringa))):
+            inc = inc + 2.1
+            setting = inc
+            print(setting)
+        return setting
+
+    pdf.multi_cell(0, 5,
+                   '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n' + '\n'
+                   + f'Gentile {nominativo} {nomecliente}' + '\n' + '\n'
                    + 'In alto trova il dettaglio dei costi sostenuti per la Sua utenza che, in merito alla fattura analizzata le ha portato un costo della componente di')
-    pdf.set_xy(pdf.get_x()+77, pdf.get_y()-5)
+    pdf.set_xy(pdf.get_x() + 77, pdf.get_y() - 5)
     pdf.set_text_color(255, 0, 0)  # ROSSO
-    pdf.multi_cell(0, 5, '€' + str(costo_totale_att) + '\n' + '\n', align='J')
+    pdf.multi_cell(0, 5, f'€ {costo_totale_att}' + '\n' + '\n', align='J')
     pdf.set_text_color(0, 0, 0)  # NERO
-    pdf.multi_cell(0, 5, 'Come potrà notare dal grafico, in caso avesse avuto il gestore da noi prospettato, a parità di consumi, avrebbe sostenuto un costo di ')
+    pdf.multi_cell(0, 5,
+                   'Come potrà notare dal grafico, in caso avesse avuto il gestore da noi prospettato, a parità di consumi, avrebbe sostenuto un costo di ')
     pdf.set_xy(pdf.get_x() + 77, pdf.get_y() - 5)
     pdf.set_text_color(255, 140, 0)  # ARANCIONE
-    pdf.multi_cell(0, 5, '€' + str(costo_totale_fare))
-    lunghezza = len(str(costo_totale_fare))
-    if lunghezza == 1:
-        setting = 84
-    elif lunghezza == 2:
-        setting = 86
-    elif lunghezza == 3:
-        setting = 88.5
-    elif lunghezza == 4:
-        setting = 90.5
-    elif lunghezza == 5:
-        setting = 93.5
-    elif lunghezza == 6:
-        setting = 95.5
-    else:
-        setting = 95.5 + lunghezza
-    pdf.set_xy(pdf.get_x() + setting, pdf.get_y() - 5)
+    pdf.multi_cell(0, 5, f'€ {costo_totale_fare}')
+    pdf.set_xy(pdf.get_x() + xy_setting(costo_totale_fare, 84), pdf.get_y() - 5)
     pdf.set_text_color(0, 0, 0)
     pdf.multi_cell(0, 5, 'con conseguente beneficio di')
-    pdf.set_xy(pdf.get_x() + setting+57, pdf.get_y() - 5)
+    pdf.set_xy(pdf.get_x() + xy_setting(costo_totale_fare, 84) + 57, pdf.get_y() - 5)
     pdf.set_text_color(34, 139, 34)  # VERDE
-    pdf.multi_cell(0, 5, '€'+str(round((costo_totale_att-costo_totale_fare), 1))+ '\n' + '\n')
+    pdf.multi_cell(0, 5, f'€{round((costo_totale_att - costo_totale_fare), 1)}' + '\n' + '\n')
     pdf.set_text_color(0, 0, 0)  # NERO
     pdf.multi_cell(0, 5, 'Tale costo Le avrebbe consentito di risparmiare')
     pdf.set_xy(pdf.get_x() + 91, pdf.get_y() - 5)
     pdf.set_text_color(34, 139, 34)  # VERDE
-    pdf.multi_cell(0, 5, '€'+costo_totale_attuale)
-    lunghezza = len(costo_totale_attuale)
-    if lunghezza == 1:
-        setting = 97.5
-    elif lunghezza == 2:
-        setting = 99.5
-    elif lunghezza == 3:
-        setting = 102.5
-    elif lunghezza == 4:
-        setting = 104.5
-    elif lunghezza == 5:
-        setting = 106.5
-    elif lunghezza == 6:
-        setting = 108.5
-    else:
-        setting = 108.5 + lunghezza
+    pdf.multi_cell(0, 5, f'€ {costo_totale_attuale}')
     pdf.set_text_color(0, 0, 0)
-    pdf.set_xy(pdf.get_x() + setting, pdf.get_y() - 5)
+    pdf.set_xy(pdf.get_x() + xy_setting(costo_totale_attuale, 97.5), pdf.get_y() - 5)
     pdf.multi_cell(0, 5, 'nell’ultimo anno!')
-    pdf.multi_cell(0, 5, 'A questo si aggiunge una decrescita dei costi di iva che sono direttamente proporzionali all’imponibile dei costi generali.'
+    pdf.multi_cell(0, 5,
+                   'A questo si aggiunge una decrescita dei costi di iva che sono direttamente proporzionali all’imponibile dei costi generali.'
                    + '\n' + '\n' + 'Il Consulente a cui sono affidate le Sue utenze, è a Sua disposizione')
     pdf.set_font('Arial Grassetto', '', 12)
     pdf.set_xy(140.5, pdf.get_y() - 5)
@@ -143,12 +126,12 @@ def creare_pdf(nomecliente, nomeconsulente, numconsulente, mailconsulente,
     pdf.multi_cell(0, 5, 'aggiornati alle migliori condizioni di mercato.' + '\n' + '\n' + '\n')
     pdf.multi_cell(0, 5, str(nomeconsulente) + '\n' + str(numconsulente) + '\n' + str(mailconsulente))
 
-    pdf.output(r'static/'+username+'confronto.pdf')
+    pdf.output(fr'static/{username}confronto.pdf')
 
 
 # MAIL SENDER FUNCTION
 def send_mail(mailcliente, nomecliente, nomenclatura, username):
-    body = 'Gentile '+str(nomenclatura)+', '+str(nomecliente)+' come da lei richiesto alleghiamo il confronto delle sue utenze'
+    body = f'Gentile {nomenclatura}, {nomecliente} come da lei richiesto alleghiamo il confronto delle sue utenze'
     message = MIMEMultipart()
     message['From'] = 'inviodocumenti.fareconsulenza@gmail.com'
     message['To'] = mailcliente
@@ -163,7 +146,7 @@ def send_mail(mailcliente, nomecliente, nomenclatura, username):
     message.attach(payload)
     session = smtplib.SMTP('smtp.gmail.com', 587)
     session.starttls()
-    session.login('inviodocumenti.fareconsulenza@gmail.com', 'PASSWORD')
+    session.login('inviodocumenti.fareconsulenza@gmail.com', 'password')
     session.sendmail('inviodocumenti.fareconsulenza@gmail.com', mailcliente, message.as_string())
     session.quit()
     print('Mail Sent')
